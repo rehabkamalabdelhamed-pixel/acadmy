@@ -1,0 +1,27 @@
+[
+  {
+    "email": "admin12345@gmail.com",
+    "password": "$2b$10$eblyMM5kniXYy6IdN0.Gr.Ews3jPAWBmIcTMyHo3efRI9gTpuBQtC",
+    "role": "admin"
+  },
+  {
+    "email": "warda12345@gmail.com",
+    "password": "$2b$10$aidhU7m0Qh8QG0xl7WOcRe3LHEbs8xWVsxRvO8kem8zRySltJJUEy",
+    "role": "teacher"
+  },
+  {
+    "email": "ahlam12345@gmail.com",
+    "password": "$2b$10$nj7EUtsiIJ8079mUw.XDGe49uF2hakE3nqWy56pDzO4NKUqOzH6s6",
+    "role": "teacher"
+  },
+  {
+    "email": "nourhan12345@gmail.com",
+    "password": "$2b$10$UTBCskvhyrEGAJBtCKs8huT8fXsQ8kB/HY1ggRdYMHZpcTS3zSHaq",
+    "role": "teacher"
+  },
+  {
+    "email": "marwa5@gmail.com",
+    "password": "$2b$10$nKx0oLRre5J4HccIBeNnjOSU3wBsCWClQ1xGrvVNLv0xBQUOzkRYe",
+    "role": "student"
+  }
+]

@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لماذا نحن؟ - Coderaᴬᴵ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --light-blue: #3b82f6;
+            --ai-purple: #7c3aed;
+            --light-purple: #8b5cf6;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-dark);
+        }
+
+        /* ========== NAVBAR ========== */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--ai-purple) 100%);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .user-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .user-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* ========== HERO SECTION ========== */
+        .why-us-hero {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--ai-purple) 100%);
+            color: white;
+            padding: 6rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+            clip-path: ellipse(150% 100% at 50% 0%);
+        }
+
+        .why-us-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,165.3C960,171,1056,149,1152,138.7C1248,128,1344,128,1392,128L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        /* ========== MISSION SECTION ========== */
+        .mission-section {
+            padding: 5rem 0;
+        }
+
+        .mission-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px var(--shadow-color);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+        }
+
+        .mission-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+        }
+
+        .mission-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .mission-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        /* ========== VALUES SECTION ========== */
+        .values-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .value-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 15px 35px var(--shadow-color);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .value-icon-wrapper {
+            width: 100px;
+            height: 100px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 3rem;
+        }
+
+        .value-1 {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1));
+            color: var(--primary-blue);
+        }
+
+        .value-2 {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));
+            color: var(--success-green);
+        }
+
+        .value-3 {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            color: var(--warning-orange);
+        }
+
+        .value-4 {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.1));
+            color: var(--ai-purple);
+        }
+
+        .value-5 {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+            color: #ef4444;
+        }
+
+        .value-6 {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
+            color: #8b5cf6;
+        }
+
+        .value-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .value-text {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* ========== DIFFERENCE SECTION ========== */
+        .difference-section {
+            padding: 5rem 0;
+        }
+
+        .difference-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px var(--shadow-color);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .difference-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+        }
+
+        .difference-number {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0.2;
+        }
+
+        .difference-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .difference-text {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* ========== STATS SECTION ========== */
+        .stats-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            display: block;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stat-label {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* ========== TEAM SECTION ========== */
+        .team-section {
+            padding: 5rem 0;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px var(--shadow-color);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .team-img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .team-info {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .team-role {
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .team-desc {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ========== CTA SECTION ========== */
+        .cta-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--ai-purple) 100%);
+            color: white;
+        }
+
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-text {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .cta-btn {
+            background: white;
+            color: var(--primary-blue);
+            padding: 1rem 3rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            color: var(--primary-blue);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--ai-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .footer-links h5 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary-blue);
+            border-radius: 2px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .footer-contact p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-icons a {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .social-icons a:hover {
+            background: var(--primary-blue);
+            transform: translateY(-5px);
+            border-color: transparent;
+        }
+
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 991px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .mission-card {
+                padding: 2rem;
+            }
+
+            .value-card,
+            .difference-card {
+                padding: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .cta-title {
+                font-size: 2rem;
+            }
+
+            .navbar-collapse {
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 1.5rem;
+                border-radius: 15px;
+                margin-top: 1rem;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+                background: rgba(255, 255, 255, 0.05);
+                margin-bottom: 0.5rem;
+            }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                background: var(--primary-blue);
+                transform: translateX(-5px);
+            }
+
+            .navbar-nav {
+                margin-bottom: 1rem;
+            }
+
+            footer {
+                text-align: center;
+            }
+
+            .footer-links h5::after {
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+            }
+
+            .footer-links a {
+                justify-content: center;
+            }
+
+            .footer-contact p {
+                justify-content: center;
+            }
+
+            .social-icons {
+                justify-content: center;
+            }
+
+            /* Stack buttons nicely on mobile */
+            .d-flex.gap-2 {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .user-btn {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        .navbar-logo {
+            height: 50px;
+            width: auto;
+        }
+
+        .footer-logo-img {
+            height: 60px;
+            width: auto;
+            margin-bottom: 1rem;
+            border-radius: 50%;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="./assets/images/logo.jpeg"
+                    alt="Academy Logo" class="navbar-logo rounded-circle">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">البرمجة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">الامتحانات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="whyus.html">لماذا نحن </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">تواصل معنا</a>
+                    </li>
+
+                </ul>
+                <div class="d-flex gap-2 mt-3 mt-lg-0 ms-lg-3">
+                    <a href="login/login.html" class="user-btn text-nowrap">
+                        <i class="bi bi-person-circle me-1"></i>تسجيل الدخول
+                    </a>
+                    <a href="/register/register.html" class="user-btn text-nowrap">
+                        <i class="bi bi-person-circle me-1"></i>انشاء حساب
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO SECTION ========== -->
+    <header class="why-us-hero text-center">
+        <div class="container position-relative">
+            <h1 class="page-title mb-4">لماذا تختار أكاديميتنا؟</h1>
+            <p class="lead mb-0 mx-auto" style="max-width: 700px; font-size: 1.25rem;">
+                لأننا نؤمن بأن كل طالب يستحق فرصة ليتعلم مهارات المستقبل بأسلوب مبسط وممتع
+            </p>
+        </div>
+    </header>
+
+    <!-- ========== MISSION SECTION ========== -->
+    <section class="mission-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="mission-card animate-fade-in">
+                        <div class="mission-icon">
+                            <i class="bi bi-rocket-takeoff"></i>
+                        </div>
+                        <h2 class="mission-title">رسالتنا ورؤيتنا</h2>
+                        <div class="mission-text">
+                            <p>
+                                في Coderaᴬᴵ، نؤمن بأن تعلم التكنولوجيا يجب أن يكون متاحاً
+                                وسهلاً لكل طالب في الصف الأول الثانوي.
+                                مهمتنا هي تمكين الجيل القادم من المبرمجين والمبتكرين من خلال توفير تعليم عالي الجودة
+                                يركز على الفهم العميق وليس الحفظ.
+                            </p>
+                            <p>
+                                رؤيتنا هي إنشاء جيل من الطلاب القادرين على مواكبة ثورة Java والبرمجة، مجهزين
+                                بالمهارات اللازمة لقيادة المستقبل الرقمي.
+                                نحن لا نعلم فقط كيفية كتابة الأكواد، بل نعلم كيفية التفكير كمبرمجين وكيفية حل المشكلات
+                                بطرق إبداعية.
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="fw-bold mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>مهمتنا
+                                </h4>
+                                <p class="text-muted">توفير تعليم تقني متميز يجعل تعلم البرمجة و Java سهلاً
+                                    وممتعاً لكل طالب.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="fw-bold mb-3"><i class="bi bi-eye-fill text-primary me-2"></i>رؤيتنا</h4>
+                                <p class="text-muted">تخريج جيل قادر على الابتكار والتأثير في مجال التكنولوجيا محلياً
+                                    وعالمياً.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== VALUES SECTION ========== -->
+    <section class="values-section">
+        <div class="container">
+            <h2 class="section-title">قيمنا الأساسية</h2>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="value-card">
+                        <div class="value-icon-wrapper value-1">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <h3 class="value-title">التعليم أولاً</h3>
+                        <p class="value-text">
+                            نضع احتياجات الطالب التعليمية في المركز الأول. كل قرار نتخذه وكل مادة نقدمها مصممة لتحقيق
+                            أفضل نتائج تعليمية.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="value-card">
+                        <div class="value-icon-wrapper value-2">
+                            <i class="bi bi-lightbulb"></i>
+                        </div>
+                        <h3 class="value-title">الابتكار المستمر</h3>
+                        <p class="value-text">
+                            نطور مناهجنا باستمرار لمواكبة أحدث التقنيات. نؤمن بأن التكنولوجيا تتطور يومياً والتعليم يجب
+                            أن يواكب هذا التطور.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="value-card">
+                        <div class="value-icon-wrapper value-3">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3 class="value-title">الدعم الفردي</h3>
+                        <p class="value-text">
+                            كل طالب فريد ويستحق اهتماماً خاصاً. نقدم دعم فردي ومراجعات شخصية لضمان تقدم كل طالب حسب
+                            وتيرته الخاصة.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="value-card">
+                        <div class="value-icon-wrapper value-4">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h3 class="value-title">الجودة العالية</h3>
+                        <p class="value-text">
+                            لا نتساهل في جودة المحتوى التعليمي. كل فيديو، كل امتحان، وكل ملف PDF يمر بمراحل مراجعة دقيقة
+                            قبل تقديمه للطلاب.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="value-card">
+                        <div class="value-icon-wrapper value-5">
+                            <i class="bi bi-heart"></i>
+                        </div>
+                        <h3 class="value-title">الشغف والتقدير</h3>
+                        <p class="value-text">
+                            نحن شغوفون بما نفعله ونقدر تفرد كل طالب. نخلق بيئة تعليمية محفزة تشجع على الإبداع وحب
+                            التعلم.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="value-card">
+                        <div class="value-icon-wrapper value-6">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <h3 class="value-title">التميز والنجاح</h3>
+                        <p class="value-text">
+                            نهدف لتحقيق التميز في كل ما نقدمه. نجاح طلابنا هو مقياس نجاحنا، ونفخر بتحقيقهم أعلى النتائج.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DIFFERENCE SECTION ========== -->
+    <section class="difference-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">ما الذي يميزنا عن الآخرين؟</h2>
+
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="difference-card">
+                        <div class="difference-number">01</div>
+                        <h3 class="difference-title">مناهج مخصصة للصف الأول الثانوي</h3>
+                        <p class="difference-text">
+                            لا نقدم محتوى عام، بل مناهج مصممة خصيصاً لمستوى طلاب الصف الأول الثانوي. كل درس، كل مثال،
+                            وكل تمرين تم تصميمه ليتناسب مع المرحلة العمرية والمستوى التعليمي.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="difference-card">
+                        <div class="difference-number">02</div>
+                        <h3 class="difference-title">مزيج متكامل من المصادر التعليمية</h3>
+                        <p class="difference-text">
+                            نحن لا نعتمد على طريقة تعليم واحدة. ندمج بين فيديوهات الشرح، الامتحانات التفاعلية، ملفات
+                            PDF، وتمارين عملية لتوفير تجربة تعليمية شاملة تناسب جميع أنماط التعلم.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- <div class="col-lg-6">
+                    <div class="difference-card">
+                        <div class="difference-number">03</div>
+                        <h3 class="difference-title">متابعة فردية وتقييم مستمر</h3>
+                        <p class="difference-text">
+                            نظام متابعة دقيق يتابع تقدم كل طالب خطوة بخطوة. تقارير أسبوعية مفصلة، مراجعات شخصية، وتعديل الخطة الدراسية حسب احتياجات كل طالب لضمان تحقيق أفضل النتائج.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="difference-card">
+                        <div class="difference-number">04</div>
+                        <h3 class="difference-title">خبراء متخصصون في تعليم المراهقين</h3>
+                        <p class="difference-text">
+                            فريقنا ليس فقط من الخبراء التقنيين، بل من المتخصصين في تعليم المراهقين. يعرفون كيفية توصيل المعلومات المعقدة بطرق بسيطة وجذابة تناسب هذه المرحلة العمرية.
+                        </p>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== STATS SECTION ========== -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">رضا أولياء الأمور</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">طالب متفوق</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">100+</span>
+                        <span class="stat-label">ساعة تعليمية</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">دعم فني</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TEAM SECTION ========== -->
+    <section class="team-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">فريقنا المتميز</h2>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEia7MOFGx3tXuTv-6VcQynr_Q2MAG7Z6TEE0OdIxv0N5zSRhZKAMxToqhBLAGlsupsUvUu4fDcDAjxSeubLJPQX7bwVtS5SXIHQNW0xBp1abk-BzmWzfAl20GqPp-RRV5639_dpXRobaQnRo9W5Y28N5sata-FUur6dfD7zU18tFhoGrsR-6MbJOXGGyhI/w1200-h630-p-k-no-nu/cartoon%207.jpg"
+                            class="team-img" alt="نورهان امير">
+                        <div class="team-info">
+                            <h4 class="team-name"> نورهان امير </h4>
+                            <span class="team-role"> مبرمجه</span>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEia7MOFGx3tXuTv-6VcQynr_Q2MAG7Z6TEE0OdIxv0N5zSRhZKAMxToqhBLAGlsupsUvUu4fDcDAjxSeubLJPQX7bwVtS5SXIHQNW0xBp1abk-BzmWzfAl20GqPp-RRV5639_dpXRobaQnRo9W5Y28N5sata-FUur6dfD7zU18tFhoGrsR-6MbJOXGGyhI/w1200-h630-p-k-no-nu/cartoon%207.jpg"
+                            class="team-img" alt="هاجر">
+                        <div class="team-info">
+                            <h4 class="team-name">هاجر </h4>
+                            <span class="team-role"> مبرمجه</span>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEia7MOFGx3tXuTv-6VcQynr_Q2MAG7Z6TEE0OdIxv0N5zSRhZKAMxToqhBLAGlsupsUvUu4fDcDAjxSeubLJPQX7bwVtS5SXIHQNW0xBp1abk-BzmWzfAl20GqPp-RRV5639_dpXRobaQnRo9W5Y28N5sata-FUur6dfD7zU18tFhoGrsR-6MbJOXGGyhI/w1200-h630-p-k-no-nu/cartoon%207.jpg"
+                            class="team-img" alt="وردة">
+                        <div class="team-info">
+                            <h4 class="team-name">وردة </h4>
+                            <span class="team-role"> مبرمجه</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CTA SECTION ========== -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-container">
+                <h2 class="cta-title">انضم إلى رحلتنا التعليمية</h2>
+                <p class="cta-text">
+                    ابدأ رحلتك في تعلم البرمجة و Java اليوم. انضم إلى مئات الطلاب الذين اكتشفوا شغفهم
+                    بالتكنولوجيا معنا.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="index.html#subjects" class="cta-btn">
+                        <i class="bi bi-play-circle me-2"></i>ابدأ التعلم الآن
+                    </a>
+                    <a href="contact.html" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-chat-dots me-2"></i>تواصل معنا
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <img src="./assets/images/logo.jpeg"
+                        alt="Academy Logo" class="footer-logo-img">
+                    <p class="text-light mb-4">
+                        منصة تعليمية متخصصة في تدريس البرمجة و Java لطلاب الصف الأول الثانوي، نساعدك لإتقان
+                        مهارات المستقبل.
+                    </p>
+                    <div class="social-icons">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-youtube"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-links">
+                        <h5>المواد الدراسية</h5>
+                        <ul>
+                            <li><a href="#"><i class="bi bi-chevron-left"></i> البرمجة و الذكاء الاصطناعي  - التيرم الأول</a></li>
+                            <li><a href="#"><i class="bi bi-chevron-left"></i> البرمجة و الذكاء الاصطناعي  - التيرم الثاني</a></li>
+                            <li><a href="#"><i class="bi bi-chevron-left"></i> Java - التيرم الأول</a></li>
+                            <li><a href="#"><i class="bi bi-chevron-left"></i> Java - التيرم الثاني</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-contact">
+                        <h5>تواصل معنا</h5>
+                        <p><i class="bi bi-envelope me-2"></i> coderaaiedutech@gmail.com</p>
+                        <p><i class="bi bi-phone me-2"></i> 01012345678</p>
+                        <p><i class="bi bi-geo-alt me-2"></i> الدقهليه، مصر</p>
+                        <p><i class="bi bi-clock me-2"></i> الأحد - الخميس: 9 ص - 5 م</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 Coderaᴬᴵ. جميع الحقوق محفوظة.</p>
+                <p class="mt-2">
+                    <a href="#" class="text-light me-3">سياسة الخصوصية</a>
+                    <a href="#" class="text-light">شروط الاستخدام</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // تأثيرات الشريط العلوي عند التمرير
+            window.addEventListener('scroll', function () {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.style.background = 'rgba(15, 23, 42, 0.95)';
+                    navbar.style.backdropFilter = 'blur(10px)';
+                } else {
+                    navbar.style.background = 'linear-gradient(135deg, var(--primary-blue) 0%, var(--ai-purple) 100%)';
+                    navbar.style.backdropFilter = 'none';
+                }
+            });
+
+            // تأثيرات ظهور العناصر عند التمرير
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+
+                        // تأثير خاص للأرقام في قسم الاختلاف
+                        if (entry.target.querySelector('.difference-number')) {
+                            const number = entry.target.querySelector('.difference-number');
+                            number.style.opacity = '1';
+                            number.style.transform = 'scale(1)';
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // مراقبة العناصر لإضافة تأثيرات الظهور
+            const elementsToAnimate = document.querySelectorAll('.value-card, .difference-card, .team-card, .mission-card');
+            elementsToAnimate.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+
+            // تأثير خاص لأرقام قسم الاختلاف
+            document.querySelectorAll('.difference-number').forEach(number => {
+                number.style.opacity = '0.2';
+                number.style.transform = 'scale(0.8)';
+                number.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            });
+
+            // إحصائيات متحركة
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const statSection = document.querySelector('.stats-section');
+
+            const statObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        statNumbers.forEach((stat, index) => {
+                            const target = stat.textContent;
+                            const duration = 1500;
+                            const steps = 60;
+                            const increment = parseInt(target) / steps;
+                            let current = 0;
+
+                            const timer = setInterval(() => {
+                                current += increment;
+                                if (current >= parseInt(target)) {
+                                    stat.textContent = target;
+                                    clearInterval(timer);
+                                } else {
+                                    stat.textContent = Math.floor(current) + (target.includes('%') ? '%' : '+');
+                                }
+                            }, duration / steps);
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            statObserver.observe(statSection);
+
+            // تأثيرات للأزرار عند الضغط
+            const buttons = document.querySelectorAll('.cta-btn, .user-btn');
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function () {
+                    this.style.transform = 'scale(0.95)';
+                });
+
+                button.addEventListener('mouseup', function () {
+                    this.style.transform = '';
+                });
+
+                button.addEventListener('mouseleave', function () {
+                    this.style.transform = '';
+                });
+            });
+
+            console.log('صفحة "لماذا نحن؟" جاهزة!');
+        });
+    </script>
+</body>
+
+</html>

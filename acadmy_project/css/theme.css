@@ -1,0 +1,72 @@
+/* Shared theme for Acadmy dashboards (RTL) */
+@charset "utf-8";
+:root{
+  --primary-500: #4b86b4; /* calm blue */
+  --primary-600: #3b6a9a;
+  --accent-500: #6fbf73; /* soft green for progress */
+  --bg-gradient-start: #eef6fb;
+  --bg-gradient-end: #f7fbff;
+  --dark-900: #20303f; /* slightly softer dark */
+  --muted: #6b7280;
+}
+
+/* Use the Cairo font provided in the HTML pages */
+*{ box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+body{ margin:0; padding:0; background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%); min-height:100vh; }
+
+/* Layout helpers */
+.sidebar{ background: var(--dark-900); color:#fff; padding:24px; min-height:100vh; }
+.sidebar h2{ color:#fff; font-weight:600; }
+.main-content{ background: #f7fafc; padding:28px; min-height:100vh; }
+.card{ border-radius:12px; border:none; box-shadow: 0 6px 18px rgba(15,23,42,0.08); }
+
+/* Stat boxes */
+.stat-box, .stat-card{ background:#fff; padding:18px; border-radius:12px; text-align:center; box-shadow: 0 4px 10px rgba(2,6,23,0.06); }
+.stat-number{ font-size:2rem; font-weight:700; color:var(--primary-500); }
+.stat-label{ color:var(--muted); font-size:0.95rem; }
+
+/* small icon inside stat box */
+.stat-icon{ font-size:1.6rem; color:var(--primary-500); }
+
+/* Subject pill styles */
+.subject-filters .btn{ border-radius:20px; margin-inline:6px; }
+.pill-prog{ background:#eaf4ff; color:#2b6cb0; border:1px solid #d0e6ff; }
+.pill-ai{ background:#eefaf1; color:#2f855a; border:1px solid #dff6e8; }
+.pill-js{ background:#fff8e6; color:#b7791f; border:1px solid #ffe9b5; }
+
+.badge-category{ font-size:0.78rem; padding:.35rem .7rem; border-radius:8px; }
+
+.subject-label{ display:inline-flex; align-items:center; gap:.5rem; }
+
+/* small spacing for icons in nav and lists */
+.icon-sm{ font-size:1.1rem; margin-inline-start:6px; }
+
+/* Tables */
+.table-hover tbody tr:hover{ background:#edf2f7; }
+
+/* Navigation */
+.nav-link{ color:rgba(255,255,255,0.9); }
+.nav-link.active{ background: rgba(255,255,255,0.06); border-radius:8px; }
+
+/* Video list / cards */
+.video-item{ border-radius:10px; overflow:hidden; margin-bottom:12px; }
+.video-item .card-body{ padding:14px; }
+.video-item .video-meta{ color:var(--muted); font-size:0.9rem; }
+.video-thumbnail{ height:150px; background:linear-gradient(90deg,var(--primary-500),var(--primary-600)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.video-card{ background:#fff; border-radius:10px; box-shadow: 0 6px 14px rgba(15,23,42,0.06); transition: transform .18s ease; cursor:pointer; }
+.video-card:hover{ transform: translateY(-6px); }
+
+.badge-category{ font-size:0.78rem; padding:.35rem .7rem; }
+
+/* Progress bar theme */
+.progress-bar-animated{ background:linear-gradient(90deg,var(--primary-500),var(--accent-500)); }
+
+/* Buttons */
+.btn-primary{ background:var(--primary-500); border: none; }
+.btn-primary:hover{ background:var(--primary-600); }
+
+/* Responsive tweaks */
+@media (max-width: 768px){
+  .sidebar{ min-height: auto; padding:16px; }
+  .main-content{ padding:18px; }
+}
