@@ -26,15 +26,14 @@ npm start
 
 ### المشرف (Admin)
 - **البريد**: `admin12345@gmail.com`
-- **كلمة المرور**: `Admin@123`
 - **الصلاحيات**: إدارة المدرسين والطلاب والفيديوهات
 
 ### المدرسون (Teachers)
 | البريد الإلكتروني | كلمة المرور |
 |---|---|
-| `warda12345@gmail.com` | `Teacher@123` |
-| `ahlam12345@gmail.com` | `Teacher@123` |
-| `nourhan12345@gmail.com` | `Teacher@123` |
+| `warda12345@gmail.com` |  |
+| `ahlam12345@gmail.com` |  |
+| `nourhan12345@gmail.com` | |
 - **الصلاحيات**: إضافة وحذف فيديوهات، مشاهدة إحصائيات طلابهم
 
 ### الطلاب (Students)
