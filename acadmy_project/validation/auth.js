@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 */
 
                 // send credentials to backend
-                const response = await fetch('https://acadmy-production.up.railway.app/login', {
+                const response = await fetch('http://localhost:3000/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             try {
                 // post registration data to backend
-                const response = await fetch('https://acadmy-production.up.railway.app/register', {
+                const response = await fetch('http://localhost:3000/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
