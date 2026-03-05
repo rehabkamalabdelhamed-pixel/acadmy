@@ -8,85 +8,110 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-  <!-- الشريط العلوي -->
-  <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#"><i class="bi bi-mortarboard"></i> لوحة الطالب</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <span class="nav-link" id="studentEmail"></span>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> خروج</a>
-          </li>
-        </ul>
+  <div class="row g-0 min-vh-100">
+    <!-- الشريط الجانبي -->
+    <div class="col-lg-2 sidebar">
+      <div class="mb-4">
+        <h2 class="mb-4"><i class="bi bi-mortarboard"></i> لوحة الطالب</h2>
+        <div id="studentInfo" class="text-muted small"></div>
       </div>
-    </div>
-  </nav>
-
-  <div class="container-fluid py-4">
-    <!-- الإحصائيات -->
-    <div class="row mb-4">
-      <div class="col-md-3 mb-3">
-        <div class="stat-card d-flex align-items-center gap-3">
-          <i class="bi bi-play-btn stat-icon"></i>
-          <div>
-            <div class="stat-number" id="videosWatched">0</div>
-            <small class="text-muted">فيديوهات شاهدتها</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="stat-card d-flex align-items-center gap-3">
-          <i class="bi bi-check2-square stat-icon"></i>
-          <div>
-            <div class="stat-number" id="completedVideos">0</div>
-            <small class="text-muted">فيديوهات مكتملة</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="stat-card d-flex align-items-center gap-3">
-          <i class="bi bi-percent stat-icon"></i>
-          <div>
-            <div class="stat-number" id="totalProgress">0%</div>
-            <small class="text-muted">نسبة التقدم</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="stat-card d-flex align-items-center gap-3">
-          <i class="bi bi-list-check stat-icon"></i>
-          <div>
-            <div class="stat-number" id="quizzes">0</div>
-            <small class="text-muted">اختبارات</small>
-          </div>
-        </div>
-      </div>
+      <nav class="nav flex-column">
+        <a class="nav-link text-white active" href="#" data-tab="dashboard">
+          <i class="bi bi-house-door-fill me-2"></i> لوحة التحكم
+        </a>
+        <a class="nav-link text-white" href="#" data-tab="videos">
+          <i class="bi bi-play-circle-fill me-2"></i> الفيديوهات
+        </a>
+        <a class="nav-link text-white" href="#" data-tab="teachers">
+          <i class="bi bi-people-fill me-2"></i> المدرسين
+        </a>
+        <hr class="border-secondary">
+        <a class="nav-link text-white" href="#" onclick="logout()">
+          <i class="bi bi-box-arrow-left me-2"></i> تسجيل الخروج
+        </a>
+      </nav>
     </div>
 
-    <!-- التصفية -->
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <input type="text" id="searchVideos" class="form-control" placeholder="ابحث عن فيديو...">
-      </div>
-      <div class="col-md-6">
-        <div class="subject-filters text-start">
-          <button class="btn btn-sm pill-prog" onclick="filterBySubject('')"><i class="bi bi-laptop icon-sm"></i> كل المواد</button>
-          <button class="btn btn-sm pill-prog" onclick="filterBySubject('برمجة وذكاء اصطناعي')"><i class="bi bi-laptop icon-sm"></i> برمجة وذكاء اصطناعي</button>
-          <button class="btn btn-sm pill-js" onclick="filterBySubject('جافا اسكربت')"><i class="bi bi-file-code icon-sm"></i> جافا اسكربت</button>
+    <!-- المحتوى الرئيسي -->
+    <div class="col-lg-10 main-content">
+      <!-- لوحة التحكم -->
+      <div id="dashboardTab" class="tab-content">
+        <h2 class="mb-4">مرحباً بك في لوحة التحكم</h2>
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div><i class="bi bi-play-btn-fill stat-icon"></i></div>
+              <div>
+                <div class="stat-number" id="videosWatched">0</div>
+                <small class="text-muted">فيديوهات شاهدتها</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div><i class="bi bi-check-circle-fill stat-icon" style="color: var(--success-500);"></i></div>
+              <div>
+                <div class="stat-number" id="completedVideos">0</div>
+                <small class="text-muted">فيديوهات مكتملة</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div><i class="bi bi-graph-up-arrow stat-icon" style="color: var(--warning-500);"></i></div>
+              <div>
+                <div class="stat-number" id="totalProgress">0%</div>
+                <small class="text-muted">نسبة التقدم</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <i class="bi bi-list-check stat-icon"></i>
+              <div>
+                <div class="stat-number" id="quizzes">0</div>
+                <small class="text-muted">اختبارات</small>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- الفيديوهات -->
-    <div class="row" id="videosList"></div>
+      <!-- الفيديوهات -->
+      <div id="videosTab" class="tab-content d-none">
+        <h2 class="mb-4">الفيديوهات</h2>
+        <div id="backButtonContainer" class="mb-3" style="display: none;">
+          <button class="btn btn-secondary" onclick="showAllVideos()">
+            <i class="bi bi-arrow-left me-2"></i> العودة إلى جميع الفيديوهات
+          </button>
+          <button class="btn btn-outline-primary ms-2" onclick="switchTab('teachers')">
+            <i class="bi bi-people me-2"></i> العودة إلى المدرسين
+          </button>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <input type="text" id="searchVideos" class="form-control" placeholder="ابحث عن فيديو...">
+          </div>
+          <div class="col-md-6">
+            <div class="subject-filters text-start">
+              <button class="btn btn-sm pill-prog" onclick="filterBySubject('')"><i class="bi bi-laptop icon-sm"></i> كل المواد</button>
+              <button class="btn btn-sm pill-prog" onclick="filterBySubject('برمجة وذكاء اصطناعي')"><i class="bi bi-laptop icon-sm"></i> برمجة وذكاء اصطناعي</button>
+              <button class="btn btn-sm pill-js" onclick="filterBySubject('جافا اسكربت')"><i class="bi bi-file-code icon-sm"></i> جافا اسكربت</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" id="videosList"></div>
+      </div>
+
+      <!-- المدرسين -->
+      <div id="teachersTab" class="tab-content d-none">
+        <h2 class="mb-4">المدرسين</h2>
+        <div class="row" id="teachersList"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Modal لعرض الفيديو -->
@@ -122,22 +147,40 @@
     let studentEmail = localStorage.getItem('userEmail') || 'student1@example.com';
     let allVideos = [];
     let studentProgress = {};
+    let allTeachers = [];
     let currentVideoId = null;
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('studentEmail').textContent = studentEmail;
+      document.getElementById('studentInfo').textContent = studentEmail;
       loadStudentProgress();
       loadAllVideos();
+      loadTeachers();
       setupEventListeners();
     });
 
     function setupEventListeners() {
+      // التنقل بين الأقسام
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          if (link.dataset.tab) {
+            e.preventDefault();
+            switchTab(link.dataset.tab);
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+          }
+        });
+      });
+
       document.getElementById('searchVideos').addEventListener('input', filterVideos);
-      document.getElementById('filterCategory').addEventListener('change', filterVideos);
       document.getElementById('progressSlider').addEventListener('input', (e) => {
         document.getElementById('progressBar').style.width = e.target.value + '%';
       });
       document.getElementById('markCompleteBtn').addEventListener('click', markVideoComplete);
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('d-none'));
+      document.getElementById(tab + 'Tab').classList.remove('d-none');
     }
 
     async function loadStudentProgress() {
@@ -161,6 +204,55 @@
       } catch (err) {
         console.error('خطأ في تحميل الفيديوهات:', err);
       }
+    }
+
+    async function loadTeachers() {
+      try {
+        // جلب المدرسين
+        const res = await fetch(`${API_URL}/teachers`);
+        allTeachers = await res.json();
+        renderTeachers();
+      } catch (err) {
+        console.error('خطأ في تحميل المدرسين:', err);
+      }
+    }
+
+    function renderTeachers() {
+      const mainContainer = document.getElementById('teachersList');
+      mainContainer.innerHTML = '';
+
+      if (allTeachers.length === 0) {
+        mainContainer.innerHTML = '<div class="alert alert-info w-100 text-center"><i class="bi bi-info-circle me-2"></i>لا توجد مدرسون حالياً</div>';
+        return;
+      }
+
+      allTeachers.forEach(teacher => {
+        // عد الفيديوهات لهذا المدرس
+        const teacherVideos = allVideos.filter(v => v.teacher === teacher.email);
+
+        const card = document.createElement('div');
+        card.className = 'col-md-4 mb-4';
+        card.innerHTML = `
+          <div class="video-card teacher-card">
+            <div class="video-thumbnail">
+              <i class="bi bi-person-circle" style="font-size: 3.5rem; color: white;"></i>
+            </div>
+            <div class="p-3">
+              <h6 class="mb-2"><i class="bi bi-person-badge me-2"></i>${teacher.email}</h6>
+              <p class="small text-muted mb-2"><i class="bi bi-briefcase me-1"></i>مدرس متخصص</p>
+              <div class="mb-3">
+                <span class="badge badge-category pill-prog subject-label">
+                  <i class="bi bi-film me-1"></i> ${teacherVideos.length} فيديو
+                </span>
+              </div>
+              <button class="btn btn-primary btn-sm w-100" onclick="filterByTeacher('${teacher.email}')">
+                <i class="bi bi-eye-fill me-1"></i> عرض الفيديوهات
+              </button>
+            </div>
+          </div>
+        `;
+        mainContainer.appendChild(card);
+      });
     }
 
     function renderVideos(videos) {
@@ -206,11 +298,55 @@
       return `<span class="badge-category bg-light text-muted">${cat}</span>`;
     }
 
+    function getYouTubeEmbedUrl(url) {
+      if (!url) return '';
+      
+      // Extract video ID from various YouTube URL formats
+      let videoId = '';
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      } else if (url.includes('youtube.com/watch?v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+      } else if (url.includes('youtube.com/embed/')) {
+        videoId = url.split('embed/')[1].split('?')[0];
+      }
+      
+      if (!videoId) {
+        console.warn('لم يتمكن من استخراج معرف الفيديو من الرابط:', url);
+        return url;
+      }
+      
+      // تنظيف رقم الفيديو من أي أحرف غريبة
+      videoId = videoId.trim();
+      
+      return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+    }
+
     function filterBySubject(subject){
       document.getElementById('searchVideos').value = '';
-      if(!subject){ renderVideos(allVideos); return; }
+      if(!subject){ 
+        renderVideos(allVideos); 
+        document.getElementById('backButtonContainer').style.display = 'none';
+        return; 
+      }
       const filtered = allVideos.filter(v => v.category === subject);
       renderVideos(filtered);
+      document.getElementById('backButtonContainer').style.display = 'none';
+    }
+  
+
+    function filterByTeacher(teacherEmail){
+      document.getElementById('searchVideos').value = '';
+      const filtered = allVideos.filter(v => v.teacher === teacherEmail);
+      renderVideos(filtered);
+      switchTab('videos');
+      document.getElementById('backButtonContainer').style.display = 'block';
+    }
+
+    function showAllVideos(){
+      document.getElementById('searchVideos').value = '';
+      renderVideos(allVideos);
+      document.getElementById('backButtonContainer').style.display = 'none';
     }
 
     function filterVideos() {
@@ -234,16 +370,40 @@
       document.getElementById('videoTitle').textContent = video.title;
       document.getElementById('videoDescription').textContent = video.description;
 
-      // محاكاة مشغل الفيديو
-      document.getElementById('videoPlayer').innerHTML = `
-        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white;">
-          <div>
-            <i class="bi bi-play-circle" style="font-size: 4rem; margin-bottom: 10px;"></i>
-            <p>فيديو YouTube / URL</p>
-            <small>${video.url}</small>
+      // Embed YouTube video
+      const embedUrl = getYouTubeEmbedUrl(video.url);
+      const playerDiv = document.getElementById('videoPlayer');
+      
+      // تنظيف الـ div أولاً
+      playerDiv.innerHTML = '';
+      
+      if (!embedUrl || embedUrl === video.url) {
+        // إذا لم نتمكن من استخراج معرف الفيديو
+        playerDiv.innerHTML = `
+          <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 10px; color: #666;">
+            <i class="bi bi-exclamation-circle" style="font-size: 3rem; color: #dc3545; margin-bottom: 10px;"></i>
+            <p>خطأ في تحميل الفيديو</p>
+            <small>الرابط: ${video.url}</small>
+            <a href="${video.url}" target="_blank" class="btn btn-sm btn-primary mt-3">
+              <i class="bi bi-youtube"></i> شاهد على YouTube
+            </a>
           </div>
-        </div>
-      `;
+        `;
+      } else {
+        playerDiv.innerHTML = `
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="${embedUrl}" 
+            title="${video.title}"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen="true"
+            loading="lazy"
+            style="border-radius: 10px;">
+          </iframe>
+        `;
+      }
 
       const progress = studentProgress[videoId] || { percent: 0 };
       document.getElementById('progressSlider').value = progress.percent;
@@ -272,10 +432,10 @@
           studentProgress[currentVideoId] = data.progress;
           updateStats();
           loadAllVideos();
-          alert('تم تحديث التقدم بنجاح!');
+          Swal.fire('تم!', 'تم تحديث التقدم بنجاح', 'success');
         }
       } catch (err) {
-        alert('خطأ في حفظ التقدم');
+        Swal.fire('خطأ', 'خطأ في حفظ التقدم', 'error');
       }
     }
 
@@ -293,10 +453,20 @@
     }
 
     function logout() {
-      if (confirm('هل تريد تسجيل الخروج؟')) {
-        localStorage.removeItem('userEmail');
-        window.location.href = '../login/login.html';
-      }
+      Swal.fire({
+        title: 'هل تريد تسجيل الخروج؟',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'نعم',
+        cancelButtonText: 'إلغاء'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('userEmail');
+          window.location.href = '../login/login.html';
+        }
+      });
     }
   </script>
 </body>

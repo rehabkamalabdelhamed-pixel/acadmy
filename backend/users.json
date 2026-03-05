@@ -23,5 +23,10 @@
     "email": "marwa5@gmail.com",
     "password": "$2b$10$nKx0oLRre5J4HccIBeNnjOSU3wBsCWClQ1xGrvVNLv0xBQUOzkRYe",
     "role": "student"
+  },
+  {
+    "email": "rehab@gmail.com",
+    "password": "$2b$10$cDZuKO5L0ZpAnuB3QLsnJu27xLxR2wbycMoPd9ZZaXH9tWBMLonPC",
+    "role": "student"
   }
 ]

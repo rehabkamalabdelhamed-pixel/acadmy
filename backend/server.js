@@ -263,6 +263,44 @@ app.delete('/videos/:id', (req, res) => {
   res.json({ message: 'تم حذف الفيديو بنجاح' });
 });
 
+// PUT update video (teacher can update own, admin can update any)
+app.put('/videos/:id', (req, res) => {
+  const { title, description, url, category, teacher } = req.body;
+  
+  if (!teacher) {
+    return res.status(400).json({ message: 'البريد الإلكتروني للمدرس مطلوب' });
+  }
+  
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+    return res.status(403).json({ message: 'ليس لديك صلاحية' });
+  }
+  
+  const videos = loadVideos();
+  const videoIndex = videos.findIndex(v => v.id === req.params.id);
+  
+  if (videoIndex === -1) {
+    return res.status(404).json({ message: 'فيديو غير موجود' });
+  }
+  
+  // teacher can only update own videos
+  if (user.role === 'teacher' && videos[videoIndex].teacher !== teacher) {
+    return res.status(403).json({ message: 'لا يمكنك تعديل فيديو لمدرس آخر' });
+  }
+  
+  // update fields
+  if (title !== undefined) videos[videoIndex].title = title;
+  if (description !== undefined) videos[videoIndex].description = description;
+  if (url !== undefined) videos[videoIndex].url = url;
+  if (category !== undefined) videos[videoIndex].category = category;
+  
+  saveVideos(videos);
+  
+  res.json({ message: 'تم تحديث الفيديو بنجاح', video: videos[videoIndex] });
+});
+
 // ============ PROGRESS API ============
 
 // GET student progress
@@ -358,6 +396,16 @@ app.get('/admin/stats', (req, res) => {
   }
   
   res.json(stats);
+});
+
+// GET teachers (public for students to see)
+app.get('/teachers', (req, res) => {
+  const users = loadUsers();
+  const teachers = users.filter(u => u.role === 'teacher').map(u => ({
+    email: u.email,
+    role: u.role
+  }));
+  res.json(teachers);
 });
 
 // 404 fallback

@@ -155,14 +155,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (response.ok) {
                     // success response contains role, message
-                    const roleMessage = data.role ? ` (الدور: ${data.role})` : '';
-                    showSuccess((data.message || 'تم تسجيل الدخول بنجاح!') + roleMessage);
-
-                    // store user data in localStorage
-                    localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userRole', data.role);
-                    
-                    setTimeout(() => {
+                    Swal.fire('تم!', 'تم تسجيل الدخول بنجاح', 'success').then(() => {
+                        // store user data in localStorage
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userRole', data.role);
+                        
                         // redirect based on role
                         if (data.role === 'admin') {
                             window.location.href = '../admin/dashboard.html';
@@ -171,14 +168,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         } else {
                             window.location.href = '../student/dashboard.html';
                         }
-                    }, 1500);
+                    });
                 } else {
-                    showGeneralError(data.message || 'خطأ في تسجيل الدخول');
+                    Swal.fire('خطأ', data.message || 'خطأ في تسجيل الدخول', 'error');
                     hideLoading('loginBtn', 'تسجيل الدخول');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showGeneralError('حدث خطأ في الاتصال بالخادم');
+                Swal.fire('خطأ', 'حدث خطأ في الاتصال بالخادم', 'error');
                 hideLoading('loginBtn', 'تسجيل الدخول');
             }
         });
@@ -216,21 +213,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (response.ok) {
-                    showSuccess(data.message || 'تم إنشاء الحساب بنجاح!');
-                    setTimeout(() => {
-                        window.location.href = data.redirect || '../login/login.html';
-                    }, 2000);
+                    Swal.fire('تم!', 'تم إنشاء الحساب بنجاح!', 'success').then(() => {
+                        window.location.href = '../login/login.html';
+                    });
                 } else {
-                    if (data.field) {
-                        showError(data.field + 'Error', data.message);
-                    } else {
-                        showGeneralError(data.message || 'خطأ في إنشاء الحساب');
-                    }
+                    Swal.fire('خطأ', data.message || 'خطأ في إنشاء الحساب', 'error');
                     hideLoading('registerBtn', 'إنشاء حساب');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showGeneralError('حدث خطأ في الاتصال بالخادم');
+                Swal.fire('خطأ', 'حدث خطأ في الاتصال بالخادم', 'error');
                 hideLoading('registerBtn', 'إنشاء حساب');
             }
         });

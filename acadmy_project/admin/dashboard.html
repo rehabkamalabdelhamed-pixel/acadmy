@@ -8,11 +8,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   <div class="row g-0 min-vh-100">
     <!-- الشريط الجانبي -->
-    <div class="col-md-3 sidebar">
+    <div class="col-lg-2 sidebar">
       <div class="mb-4">
         <h2 class="mb-4"><i class="bi bi-shield-lock"></i> لوحة المشرف</h2>
         <div id="adminInfo" class="text-muted small"></div>
@@ -38,7 +39,7 @@
     </div>
 
     <!-- المحتوى الرئيسي -->
-    <div class="col-md-9 main-content">
+    <div class="col-lg-10 main-content">
       <!-- الإحصائيات -->
       <div id="dashboardTab" class="tab-content">
         <h2 class="mb-4">لوحة التحكم</h2>
@@ -135,11 +136,11 @@
           <table class="table table-hover">
             <thead class="table-light">
               <tr>
-                <th>العنوان</th>
-                <th>المدرس</th>
-                <th>التصنيف</th>
-                <th>تاريخ الإضافة</th>
-                <th></th>
+                <th><i class="bi bi-file-earmark-play"></i> العنوان</th>
+                <th><i class="bi bi-person-badge"></i> المدرس</th>
+                <th><i class="bi bi-tag"></i> التصنيف</th>
+                <th><i class="bi bi-calendar-event"></i> التاريخ</th>
+                <th><i class="bi bi-gear"></i> الإجراءات</th>
               </tr>
             </thead>
             <tbody id="videosList"></tbody>
@@ -149,7 +150,49 @@
     </div>
   </div>
 
+  <!-- Modal لتعديل الفيديو (Admin) -->
+  <div class="modal fade" id="editVideoModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>تعديل الفيديو</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editVideoForm">
+            <div class="mb-3">
+              <label class="form-label"><i class="bi bi-type me-2"></i>العنوان</label>
+              <input type="text" class="form-control" id="editVideoTitle" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><i class="bi bi-card-text me-2"></i>الوصف</label>
+              <textarea class="form-control" id="editVideoDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><i class="bi bi-link-45deg me-2"></i>الرابط</label>
+              <input type="url" class="form-control" id="editVideoUrl" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><i class="bi bi-folder-check me-2"></i>التصنيف</label>
+              <select class="form-control" id="editVideoCategory" required>
+                <option value="برمجة وذكاء اصطناعي">برمجة وذكاء اصطناعي</option>
+                <option value="جافا اسكربت">جافا اسكربت</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn btn-primary" onclick="updateVideoAdmin()">
+            <i class="bi bi-check-circle me-1"></i>حفظ التغييرات
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     function getCatBadge(cat){
       const key = cat || '';
@@ -169,6 +212,7 @@
     let adminEmail = localStorage.getItem('userEmail') || 'admin12345@gmail.com';
     let allUsers = [];
     let allVideos = [];
+    let currentEditVideoId = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminInfo').textContent = adminEmail;
@@ -230,15 +274,20 @@
       list.innerHTML = '';
       
       if (teachers.length === 0) {
-        list.innerHTML = '<tr><td colspan="2" class="text-muted">لا توجد مدرسون</td></tr>';
+        list.innerHTML = '<tr><td colspan="2" class="text-muted text-center py-4"><i class="bi bi-inbox"></i> لا توجد مدرسون</td></tr>';
         return;
       }
 
       teachers.forEach(teacher => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${teacher.email}</td>
-          <td><span class="badge bg-primary">مدرس</span></td>
+          <td><i class="bi bi-person-badge"></i> ${teacher.email}</td>
+          <td class="text-end">
+            <span class="badge bg-primary"><i class="bi bi-person-check"></i> مدرس</span>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteTeacher('${teacher.email}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
         `;
         list.appendChild(row);
       });
@@ -250,15 +299,20 @@
       list.innerHTML = '';
       
       if (students.length === 0) {
-        list.innerHTML = '<tr><td colspan="2" class="text-muted">لا توجد طلاب حتى الآن</td></tr>';
+        list.innerHTML = '<tr><td colspan="2" class="text-muted text-center py-4"><i class="bi bi-inbox"></i> لا توجد طلاب حتى الآن</td></tr>';
         return;
       }
 
       students.forEach(student => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${student.email}</td>
-          <td><small class="text-muted">جديد</small></td>
+          <td><i class="bi bi-person-circle"></i> ${student.email}</td>
+          <td class="text-end">
+            <small class="text-muted"><i class="bi bi-calendar"></i> جديد</small>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteStudent('${student.email}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
         `;
         list.appendChild(row);
       });
@@ -287,19 +341,22 @@
       list.innerHTML = '';
       
       if (videos.length === 0) {
-        list.innerHTML = '<tr><td colspan="5" class="text-muted">لا توجد فيديوهات</td></tr>';
+        list.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-4"><i class="bi bi-inbox"></i> لا توجد فيديوهات</td></tr>';
         return;
       }
 
       videos.forEach(video => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><strong>${video.title}</strong></td>
-          <td>${video.teacher}</td>
+          <td><strong><i class="bi bi-file-earmark-play"></i> ${video.title}</strong></td>
+          <td><i class="bi bi-person-badge"></i> ${video.teacher}</td>
           <td>${getCatBadge(video.category)}</td>
-          <td>${new Date(video.createdAt).toLocaleDateString('ar-EG')}</td>
-          <td>
-            <button class="btn btn-sm btn-danger" onclick="deleteVideo('${video.id}')">
+          <td><small><i class="bi bi-calendar-event"></i> ${new Date(video.createdAt).toLocaleDateString('ar-EG')}</small></td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-warning" onclick="openEditVideoModal('${video.id}')" title="تعديل">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteVideo('${video.id}')" title="حذف">
               <i class="bi bi-trash"></i>
             </button>
           </td>
@@ -322,7 +379,18 @@
     }
 
     async function deleteVideo(videoId) {
-      if (!confirm('هل تريد حذف هذا الفيديو؟')) return;
+      const result = await Swal.fire({
+        title: 'هل تريد حذف هذا الفيديو؟',
+        text: 'لا يمكن التراجع عن هذا الإجراء',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'إلغاء'
+      });
+
+      if (!result.isConfirmed) return;
 
       try {
         const res = await fetch(`${API_URL}/videos/${videoId}`, {
@@ -332,23 +400,129 @@
         });
 
         if (res.ok) {
-          alert('تم حذف الفيديو بنجاح');
+          Swal.fire('تم!', 'تم حذف الفيديو بنجاح', 'success');
           loadAllVideos();
           loadStats();
         } else {
           const error = await res.json();
-          alert('خطأ: ' + error.message);
+          Swal.fire('خطأ', error.message, 'error');
         }
       } catch (err) {
-        alert('خطأ في الاتصال بالخادم');
+        Swal.fire('خطأ', 'خطأ في الاتصال بالخادم', 'error');
       }
     }
 
-    function logout() {
-      if (confirm('هل تريد تسجيل الخروج؟')) {
-        localStorage.removeItem('userEmail');
-        window.location.href = '../login/login.html';
+    function openEditVideoModal(videoId) {
+      const video = allVideos.find(v => v.id === videoId);
+      if (!video) return;
+
+      currentEditVideoId = videoId;
+      document.getElementById('editVideoTitle').value = video.title;
+      document.getElementById('editVideoDescription').value = video.description;
+      document.getElementById('editVideoUrl').value = video.url;
+      document.getElementById('editVideoCategory').value = video.category;
+
+      new bootstrap.Modal(document.getElementById('editVideoModal')).show();
+    }
+
+    async function updateVideoAdmin() {
+      const title = document.getElementById('editVideoTitle').value;
+      const description = document.getElementById('editVideoDescription').value;
+      const url = document.getElementById('editVideoUrl').value;
+      const category = document.getElementById('editVideoCategory').value;
+
+      if (!title || !url || !category) {
+        Swal.fire('خطأ', 'يرجى ملء جميع الحقول المطلوبة', 'error');
+        return;
       }
+
+      try {
+        const res = await fetch(`${API_URL}/videos/${currentEditVideoId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, url, category, teacher: adminEmail })
+        });
+
+        if (res.ok) {
+          bootstrap.Modal.getInstance(document.getElementById('editVideoModal')).hide();
+          Swal.fire('تم!', 'تم تحديث الفيديو بنجاح', 'success');
+          loadAllVideos();
+        } else {
+          const error = await res.json();
+          Swal.fire('خطأ', error.message, 'error');
+        }
+      } catch (err) {
+        Swal.fire('خطأ', 'خطأ في الاتصال بالخادم', 'error');
+      }
+    }
+
+    async function deleteTeacher(teacherEmail) {
+      const result = await Swal.fire({
+        title: 'هل تريد حذف هذا المدرس؟',
+        text: 'سيتم حذف جميع فيديوهاته أيضاً',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'إلغاء'
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+        // حذف جميع فيديوهات المدرس
+        const teacherVideos = allVideos.filter(v => v.teacher === teacherEmail);
+        for (let video of teacherVideos) {
+          await fetch(`${API_URL}/videos/${video.id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teacher: adminEmail })
+          });
+        }
+
+        Swal.fire('تم!', 'تم حذف المدرس بنجاح', 'success');
+        loadAllUsers();
+        loadAllVideos();
+        loadStats();
+      } catch (err) {
+        Swal.fire('خطأ', 'خطأ في الاتصال بالخادم', 'error');
+      }
+    }
+
+    async function deleteStudent(studentEmail) {
+      const result = await Swal.fire({
+        title: 'هل تريد حذف هذا الطالب؟',
+        text: 'لا يمكن التراجع عن هذا الإجراء',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'إلغاء'
+      });
+
+      if (!result.isConfirmed) return;
+
+      // في النسخة الحالية، نقوم بتنبيه فقط لأن حذف المستخدمين يتطلب endpoint خاص
+      Swal.fire('ملاحظة', 'ميزة حذف الطلاب ستتطلب تطوير إضافي في الخادم', 'info');
+    }
+
+    function logout() {
+      Swal.fire({
+        title: 'هل تريد تسجيل الخروج؟',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'نعم',
+        cancelButtonText: 'إلغاء'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('userEmail');
+          window.location.href = '../login/login.html';
+        }
+      });
     }
   </script>
 </body>
