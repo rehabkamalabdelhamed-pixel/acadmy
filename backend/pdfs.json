@@ -1,0 +1,14 @@
+[
+  {
+    "id": "pdf1",
+    "title": "نماذج اسئلة - برمجة",
+    "description": "ملف PDF يحتوي على نماذج أسئلة البرمجة",
+    "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+  },
+  {
+    "id": "pdf2",
+    "title": "مراجعة - رياضيات",
+    "description": "مذكرة مراجعة لمادة الرياضيات",
+    "url": "https://www.orimi.com/pdf-test.pdf"
+  }
+]

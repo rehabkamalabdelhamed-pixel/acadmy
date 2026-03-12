@@ -28,6 +28,12 @@
         <a class="nav-link text-white" href="#" data-tab="teachers">
           <i class="bi bi-people-fill me-2"></i> المدرسين
         </a>
+        <a class="nav-link text-white" href="#" data-tab="exams">
+          <i class="bi bi-file-earmark-check me-2"></i> الامتحانات
+        </a>
+        <a class="nav-link text-white" href="#" data-tab="pdfs">
+          <i class="bi bi-file-earmark-pdf me-2"></i> ملفات PDF
+        </a>
         <hr class="border-secondary">
         <a class="nav-link text-white" href="#" onclick="logout()">
           <i class="bi bi-box-arrow-left me-2"></i> تسجيل الخروج
@@ -72,8 +78,16 @@
             <div class="stat-card d-flex align-items-center gap-3">
               <i class="bi bi-list-check stat-icon"></i>
               <div>
-                <div class="stat-number" id="quizzes">0</div>
-                <small class="text-muted">اختبارات</small>
+                <div style="display:flex;gap:12px;align-items:center">
+                  <div>
+                    <div class="stat-number" id="examsTaken">0</div>
+                    <small class="text-muted">تم حلها</small>
+                  </div>
+                  <div>
+                    <div class="stat-number" id="examsPassed">0</div>
+                    <small class="text-muted">ناجحة</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -110,6 +124,18 @@
       <div id="teachersTab" class="tab-content d-none">
         <h2 class="mb-4">المدرسين</h2>
         <div class="row" id="teachersList"></div>
+      </div>
+
+      <!-- الامتحانات -->
+      <div id="examsTab" class="tab-content d-none">
+        <h2 class="mb-4">الامتحانات</h2>
+        <div id="examsList" class="row"></div>
+      </div>
+
+      <!-- ملفات PDF -->
+      <div id="pdfsTab" class="tab-content d-none">
+        <h2 class="mb-4">ملفات PDF</h2>
+        <div id="pdfsList"></div>
       </div>
     </div>
   </div>
@@ -155,6 +181,10 @@
       loadStudentProgress();
       loadAllVideos();
       loadTeachers();
+      // load exams and pdfs lists for students (if provided by backend)
+      if (typeof loadExams === 'function') loadExams();
+      if (typeof loadStudentGrades === 'function') loadStudentGrades();
+      if (typeof loadPdfs === 'function') loadPdfs();
       setupEventListeners();
     });
 
@@ -167,6 +197,10 @@
             switchTab(link.dataset.tab);
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
+            // إعادة تحميل البيانات عند فتح التابّ
+            if (link.dataset.tab === 'exams') {
+              refreshExamsDisplay(); // تحديث الامتحانات والدرجات معاً
+            }
           }
         });
       });
@@ -204,6 +238,119 @@
       } catch (err) {
         console.error('خطأ في تحميل الفيديوهات:', err);
       }
+    }
+
+    // ---------------------- Exams & PDFs for students ----------------------
+    async function loadExams() {
+      const list = document.getElementById('examsList');
+      list.innerHTML = '<div class="alert alert-info">جاري تحميل الامتحانات...</div>';
+      try {
+        const [resEx, resGrades] = await Promise.all([fetch(`${API_URL}/exams`), fetch(`${API_URL}/grades?student=${encodeURIComponent(studentEmail)}`)]);
+        if (!resEx.ok) throw new Error('no-exams');
+        const exams = await resEx.json();
+        const myGrades = resGrades.ok ? await resGrades.json() : [];
+        const gradesByExam = {};
+        myGrades.forEach(g => { gradesByExam[g.examId] = g; });
+
+        if (!exams || exams.length === 0) {
+          list.innerHTML = '<div class="alert alert-secondary">لا توجد امتحانات متاحة حالياً</div>';
+          return;
+        }
+        list.innerHTML = '';
+        exams.forEach(ex => {
+          const col = document.createElement('div');
+          col.className = 'col-md-4 mb-3';
+          const grade = gradesByExam[ex.id];
+          const gradeBadge = grade ? `
+            <div style="margin-top: 10px; padding: 10px; background: ${(grade.score / (grade.maxScore || 10)) * 100 >= 50 ? '#d4edda' : '#f8d7da'}; border-radius: 6px; border-right: 4px solid ${(grade.score / (grade.maxScore || 10)) * 100 >= 50 ? '#28a745' : '#dc3545'};">
+              <small style="color: ${(grade.score / (grade.maxScore || 10)) * 100 >= 50 ? '#155724' : '#721c24'};">
+                <strong>نتيجتك:</strong> ${grade.score}${grade.maxScore ? ' / ' + grade.maxScore : ''} 
+                <span style="margin-right: 8px;">(${Math.round((grade.score / (grade.maxScore || 10)) * 100)}%)</span>
+              </small>
+            </div>
+          ` : '';
+          col.innerHTML = `
+            <div class="card p-3" style="border: 1px solid #ddd; border-radius: 10px; transition: transform 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+              <h6 style="font-weight: 600; margin-bottom: 8px;">${ex.title}</h6>
+              <p class="small text-muted mb-2">${ex.description || ''}</p>
+              <div class="d-flex gap-2 align-items-center">
+                <button class="btn btn-primary btn-sm" onclick="openExamLink('${ex.id}')" style="flex: 1;">ابدأ الامتحان</button>
+                <small class="text-muted ms-auto">${ex.date || '-'}</small>
+              </div>
+              ${gradeBadge}
+            </div>`;
+          list.appendChild(col);
+        });
+      } catch (err) {
+        list.innerHTML = '<div class="alert alert-secondary">لا توجد امتحانات متاحة (يمكن توفيرها من الخادم)</div>';
+      }
+    }
+
+    async function openExamLink(examId) {
+      try {
+        const res = await fetch(`${API_URL}/exams/${examId}`);
+        if (!res.ok) return Swal.fire('خطأ','الامتحان غير موجود','error');
+        const ex = await res.json();
+        if (ex.link) {
+          window.open(ex.link, '_blank');
+        } else {
+          Swal.fire('معلومة','هذا الامتحان ليس له رابط خارجي','info');
+        }
+      } catch (err) {
+        Swal.fire('خطأ','خطأ في الاتصال بالخادم','error');
+      }
+    }
+    
+    // دالة محسّنة لجلب الدرجات الحديثة وتحديثها في الصفحة
+    async function refreshExamsDisplay() {
+      await Promise.all([loadExams(), loadStudentGrades()]);
+    }
+
+    async function loadPdfs() {
+      const list = document.getElementById('pdfsList');
+      list.innerHTML = '<div class="alert alert-info">جاري تحميل ملفات PDF...</div>';
+      try {
+        const res = await fetch(`${API_URL}/pdfs`);
+        if (!res.ok) throw new Error('no-pdfs');
+        const pdfs = await res.json();
+        if (!pdfs || pdfs.length === 0) {
+          list.innerHTML = '<div class="alert alert-secondary">لا توجد ملفات PDF متاحة حالياً</div>';
+          return;
+        }
+        list.innerHTML = '';
+        pdfs.forEach(p => {
+          const el = document.createElement('div');
+          el.className = 'mb-2';
+          el.innerHTML = `<a href="#" class="d-flex justify-content-between align-items-center pdf-link" data-url="${p.url}">
+            <span><i class="bi bi-file-earmark-pdf me-2 text-danger"></i>${p.title || p.name}</span>
+            <button class="btn btn-sm btn-outline-primary">عرض</button>
+          </a>`;
+          el.querySelector('.pdf-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = e.currentTarget.dataset.url;
+            document.getElementById('pdfViewerFrame').src = url;
+            new bootstrap.Modal(document.getElementById('pdfViewerModal')).show();
+          });
+          list.appendChild(el);
+        });
+      } catch (err) {
+        list.innerHTML = '<div class="alert alert-secondary">لا توجد ملفات PDF متاحة (يمكن توفيرها من الخادم)</div>';
+      }
+    }
+
+    function startExam(id) {
+      Swal.fire({
+        title: 'ابدأ الامتحان؟',
+        text: 'ستبدأ الامتحان الآن',
+        showCancelButton: true,
+        confirmButtonText: 'ابدأ',
+        cancelButtonText: 'إلغاء'
+      }).then(res => {
+        if (res.isConfirmed) {
+          // توجه لصفحة الامتحان أو افتح مودال (حسب تطبيقك)
+          window.location.href = `../exams/exam.html?id=${encodeURIComponent(id)}`;
+        }
+      });
     }
 
     async function loadTeachers() {
@@ -302,23 +449,31 @@
       if (!url) return '';
       
       // Extract video ID from various YouTube URL formats
+      // try common patterns first
+      const regex = /(?:v=|v\/|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{6,20})/i;
+      let match = url.match(regex);
       let videoId = '';
-      if (url.includes('youtu.be/')) {
-        videoId = url.split('youtu.be/')[1].split('?')[0];
-      } else if (url.includes('youtube.com/watch?v=')) {
-        videoId = url.split('v=')[1].split('&')[0];
-      } else if (url.includes('youtube.com/embed/')) {
-        videoId = url.split('embed/')[1].split('?')[0];
+      if (match && match[1]) {
+        videoId = match[1].split('?')[0].split('&')[0];
       }
-      
+
+      // fallback: try parsing query param v
+      if (!videoId) {
+        try {
+          const u = new URL(url);
+          videoId = u.searchParams.get('v') || '';
+        } catch (e) {
+          // ignore invalid URL
+        }
+      }
+
       if (!videoId) {
         console.warn('لم يتمكن من استخراج معرف الفيديو من الرابط:', url);
-        return url;
+        return null; // signal we couldn't build embed URL
       }
-      
-      // تنظيف رقم الفيديو من أي أحرف غريبة
+
       videoId = videoId.trim();
-      
+      // ensure typical 11-char id if possible, but allow other lengths
       return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
     }
 
@@ -449,7 +604,35 @@
       document.getElementById('videosWatched').textContent = watched;
       document.getElementById('completedVideos').textContent = completed;
       document.getElementById('totalProgress').textContent = avgProgress + '%';
-      document.getElementById('quizzes').textContent = '0'; // يمكن إضافة امتحانات لاحقاً
+      // امتحانات: يتم تحديثها بواسطة loadStudentGrades()
+    }
+
+    // جلب درجات الطالب وتحديث إحصائيات الامتحانات
+    async function loadStudentGrades() {
+      try {
+        const res = await fetch(`${API_URL}/grades?student=${encodeURIComponent(studentEmail)}`);
+        if (!res.ok) {
+          document.getElementById('examsTaken').textContent = '0';
+          document.getElementById('examsPassed').textContent = '0';
+          return;
+        }
+        const grades = await res.json();
+        const taken = grades.length;
+        // اعتبر النجاح إذا كانت النسبة ≥50%
+        const passed = grades.filter(g => {
+          if (g.maxScore) {
+            return (g.score / g.maxScore) * 100 >= 50;
+          }
+          return Number(g.score) >= 50;
+        }).length;
+
+        document.getElementById('examsTaken').textContent = taken;
+        document.getElementById('examsPassed').textContent = passed;
+      } catch (err) {
+        console.error('خطأ في تحميل درجات الامتحانات:', err);
+        document.getElementById('examsTaken').textContent = '0';
+        document.getElementById('examsPassed').textContent = '0';
+      }
     }
 
     function logout() {
@@ -469,5 +652,20 @@
       });
     }
   </script>
+  <!-- Modal لعرض PDF -->
+  <div class="modal fade" id="pdfViewerModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">عرض ملف PDF</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" style="height:80vh;">
+          <iframe id="pdfViewerFrame" style="width:100%;height:100%;border:0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
+

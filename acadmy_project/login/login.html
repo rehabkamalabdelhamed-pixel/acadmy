@@ -107,7 +107,7 @@
                                 </div>
                                 
                                 <!-- تذكرني ونسيت كلمة المرور -->
-                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                <!-- <div class="d-flex justify-content-between align-items-center mb-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="remember" name="remember">
                                         <label class="form-check-label" for="remember">
@@ -118,7 +118,7 @@
                                         <small>نسيت كلمة المرور؟</small>
                                     </a>
                                 </div>
-                                
+                                 -->
                                 <!-- زر تسجيل الدخول -->
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
@@ -161,19 +161,38 @@
             const password = document.getElementById('password');
             
             if (togglePassword && password) {
-                togglePassword.addEventListener('click', function() {
-                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                    password.setAttribute('type', type);
-                    
-                    const icon = this.querySelector('i');
-                    if (type === 'password') {
-                        icon.classList.remove('bi-eye-slash');
-                        icon.classList.add('bi-eye');
+                // ابدأ مخفيًا ثم أظهر عند التركيز أو أثناء الكتابة
+                togglePassword.style.display = 'none';
+
+                function updateToggleVisibility() {
+                    if (document.activeElement === password || password.value.length > 0) {
+                        togglePassword.style.display = '';
                     } else {
-                        icon.classList.remove('bi-eye');
-                        icon.classList.add('bi-eye-slash');
+                        togglePassword.style.display = 'none';
                     }
+                }
+
+                password.addEventListener('focus', updateToggleVisibility);
+                password.addEventListener('input', updateToggleVisibility);
+                password.addEventListener('blur', () => setTimeout(updateToggleVisibility, 150)); // يسمح بالنقر على الزر قبل الإخفاء
+
+                // استخدام حالة واضحة لضمان التبديل الصحيح
+                let pwdVisible = false;
+                togglePassword.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    pwdVisible = !pwdVisible;
+                    password.type = pwdVisible ? 'text' : 'password';
+                    const icon = this.querySelector('i');
+                    icon.classList.toggle('bi-eye', !pwdVisible);
+                    icon.classList.toggle('bi-eye-slash', pwdVisible);
+                    // حافظ على ظهور الزر بعد التبديل
+                    updateToggleVisibility();
+                    // أعطِ تركيز للحقل حتى يبقى المستخدم يتابع الكتابة
+                    password.focus();
                 });
+
+                // الحالة الابتدائية
+                updateToggleVisibility();
             }
             
             // Bootstrap form validation

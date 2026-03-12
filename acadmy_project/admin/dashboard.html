@@ -36,6 +36,15 @@
           <i class="bi bi-box-arrow-left me-2"></i> تسجيل الخروج
         </a>
       </nav>
+      <div id="pdfTabsSection" class="mt-4">
+        <h6 class="mb-2 text-white">الامتحانات (PDF)</h6>
+        <div id="pdfTabs" style="display:flex;gap:6px;overflow:auto;padding-bottom:6px"></div>
+        <div class="mt-2">
+          <input id="pdfFileInput" type="file" accept="application/pdf" style="display:none">
+          <button id="addPdfBtn" class="btn btn-sm btn-light"><i class="bi bi-file-earmark-pdf"></i> إضافة PDF</button>
+        </div>
+        <small class="text-muted d-block mt-2">اضف ملفات PDF لظهورها كتبوِيبات. الملفات محلية أثناء الجلسة.</small>
+      </div>
     </div>
 
     <!-- المحتوى الرئيسي -->
@@ -524,6 +533,66 @@
         }
       });
     }
+  </script>
+  <script>
+    // ---------------------- PDF tabs (sidebar) ----------------------
+    (function initPdfTabs(){
+      const pdfTabs = document.getElementById('pdfTabs');
+      const input = document.getElementById('pdfFileInput');
+      const addBtn = document.getElementById('addPdfBtn');
+      if (!pdfTabs || !input || !addBtn) return;
+
+      if (!document.getElementById('pdfViewerModal')) {
+        const modal = document.createElement('div');
+        modal.id = 'pdfViewerModal';
+        Object.assign(modal.style, {position:'fixed',top:0,left:0,width:'100%',height:'100%',background:'rgba(0,0,0,0.7)',display:'none',alignItems:'center',justifyContent:'center',zIndex:9999});
+        modal.innerHTML = `<div style="width:90%;height:90%;background:#fff;position:relative;border-radius:6px;overflow:hidden">
+          <button id="pdfModalClose" style="position:absolute;left:10px;top:10px;z-index:2" class="btn btn-sm btn-danger">إغلاق</button>
+          <iframe id="pdfViewerFrame" style="width:100%;height:100%;border:0"></iframe>
+        </div>`;
+        document.body.appendChild(modal);
+        document.getElementById('pdfModalClose').addEventListener('click', () => {
+          document.getElementById('pdfViewerFrame').src = '';
+          modal.style.display = 'none';
+        });
+      }
+
+      addBtn.addEventListener('click', () => input.click());
+
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'inline-flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.marginRight = '6px';
+
+        const btn = document.createElement('div');
+        btn.className = 'btn btn-sm btn-light d-inline-flex align-items-center';
+        btn.style.gap = '6px';
+        btn.innerHTML = `<span style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</span>`;
+        btn.addEventListener('click', () => {
+          document.getElementById('pdfViewerFrame').src = url;
+          document.getElementById('pdfViewerModal').style.display = 'flex';
+        });
+
+        const remove = document.createElement('button');
+        remove.className = 'btn btn-sm btn-outline-danger';
+        remove.style.marginInlineStart = '6px';
+        remove.textContent = '✕';
+        remove.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          URL.revokeObjectURL(url);
+          pdfTabs.removeChild(wrapper);
+        });
+
+        wrapper.appendChild(btn);
+        wrapper.appendChild(remove);
+        pdfTabs.appendChild(wrapper);
+        input.value = '';
+      });
+    })();
   </script>
 </body>
 </html>

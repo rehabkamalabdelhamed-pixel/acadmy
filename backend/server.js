@@ -7,6 +7,9 @@ const path = require('path');
 const USERS_FILE = path.join(__dirname, 'users.json');
 const VIDEOS_FILE = path.join(__dirname, 'videos.json');
 const PROGRESS_FILE = path.join(__dirname, 'progress.json');
+const PDFS_FILE = path.join(__dirname, 'pdfs.json');
+const EXAMS_FILE = path.join(__dirname, 'exams.json');
+const GRADES_FILE = path.join(__dirname, 'exam_grades.json');
 
 // helper to read/write JSON files
 function loadUsers() {
@@ -55,6 +58,48 @@ function loadProgress() {
 
 function saveProgress(progress) {
   fs.writeFileSync(PROGRESS_FILE, JSON.stringify(progress, null, 2));
+}
+
+function savePdfs(pdfs) {
+  fs.writeFileSync(PDFS_FILE, JSON.stringify(pdfs, null, 2));
+}
+
+function saveExams(exams) {
+  fs.writeFileSync(EXAMS_FILE, JSON.stringify(exams, null, 2));
+}
+
+function loadGrades() {
+  try {
+    const data = fs.readFileSync(GRADES_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
+}
+
+function saveGrades(grades) {
+  fs.writeFileSync(GRADES_FILE, JSON.stringify(grades, null, 2));
+}
+
+function loadPdfs() {
+  try {
+    const data = fs.readFileSync(PDFS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
+}
+
+function loadExams() {
+  try {
+    const data = fs.readFileSync(EXAMS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
 }
 
 // bootstrap initial accounts (admin + teachers)
@@ -113,6 +158,8 @@ app.get('/', (req, res) => {
       auth: ['/login', '/register'],
       videos: ['/videos', '/videos/:id'],
       progress: ['/progress', '/progress/:studentEmail'],
+      pdfs: ['/pdfs', '/pdfs/:id'],
+      exams: ['/exams', '/exams/:id'],
       admin: ['/admin/users', '/admin/stats']
     }
   });
@@ -406,6 +453,146 @@ app.get('/teachers', (req, res) => {
     role: u.role
   }));
   res.json(teachers);
+});
+
+// ============ PDFS & EXAMS API ============
+
+// GET all pdfs
+app.get('/pdfs', (req, res) => {
+  const pdfs = loadPdfs();
+  res.json(pdfs);
+});
+
+// GET single pdf by id
+app.get('/pdfs/:id', (req, res) => {
+  const pdfs = loadPdfs();
+  const pdf = pdfs.find(p => p.id === req.params.id);
+  if (!pdf) return res.status(404).json({ message: 'PDF غير موجود' });
+  res.json(pdf);
+});
+
+// GET all exams
+app.get('/exams', (req, res) => {
+  const exams = loadExams();
+  res.json(exams);
+});
+
+// GET single exam by id
+app.get('/exams/:id', (req, res) => {
+  const exams = loadExams();
+  const exam = exams.find(e => e.id === req.params.id);
+  if (!exam) return res.status(404).json({ message: 'امتحان غير موجود' });
+  res.json(exam);
+});
+
+// POST a grade for an exam (student submits or Apps Script posts result)
+app.post('/exams/:id/grades', (req, res) => {
+  const examId = req.params.id;
+  const { student, score, maxScore } = req.body;
+  if (!student || score === undefined) return res.status(400).json({ message: 'student and score required' });
+
+  const exams = loadExams();
+  const exam = exams.find(e => e.id === examId);
+  if (!exam) return res.status(404).json({ message: 'امتحان غير موجود' });
+
+  const { studentName } = req.body;
+  const grades = loadGrades();
+  const existing = grades.find(g => g.examId === examId && g.student === student);
+  const now = new Date().toISOString();
+  if (existing) {
+    existing.score = score;
+    existing.maxScore = maxScore || existing.maxScore || null;
+    existing.updatedAt = now;
+  } else {
+    grades.push({ id: Date.now().toString(), examId, student, studentName: studentName || null, score, maxScore: maxScore || null, createdAt: now, updatedAt: now });
+  }
+  saveGrades(grades);
+  res.json({ message: 'Grade recorded', grade: grades.find(g => g.examId === examId && g.student === student) });
+});
+
+// GET grades for an exam (list)
+app.get('/exams/:id/grades', (req, res) => {
+  const examId = req.params.id;
+  const grades = loadGrades();
+  res.json(grades.filter(g => g.examId === examId));
+});
+
+// GET grades by student
+app.get('/grades', (req, res) => {
+  const student = req.query.student;
+  if (!student) return res.status(400).json({ message: 'student query required' });
+  const grades = loadGrades();
+  res.json(grades.filter(g => g.student === student));
+});
+
+// CREATE a new PDF (teacher only)
+app.post('/pdfs', (req, res) => {
+  const { title, url, teacher } = req.body;
+  if (!title || !url || !teacher) return res.status(400).json({ message: 'title, url and teacher are required' });
+
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
+
+  const pdfs = loadPdfs();
+  const newPdf = { id: Date.now().toString(), title, description: '', url, teacher, createdAt: new Date().toISOString() };
+  pdfs.push(newPdf);
+  savePdfs(pdfs);
+  res.json({ message: 'تم إضافة PDF', pdf: newPdf });
+});
+
+// DELETE a PDF (teacher can delete own, admin any)
+app.delete('/pdfs/:id', (req, res) => {
+  const { teacher } = req.body;
+  if (!teacher) return res.status(400).json({ message: 'teacher email required in body' });
+
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
+
+  const pdfs = loadPdfs();
+  const idx = pdfs.findIndex(p => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ message: 'PDF غير موجود' });
+  if (user.role === 'teacher' && pdfs[idx].teacher !== teacher) return res.status(403).json({ message: 'لا يمكنك حذف PDF لمعلم آخر' });
+
+  pdfs.splice(idx, 1);
+  savePdfs(pdfs);
+  res.json({ message: 'تم حذف PDF' });
+});
+
+// CREATE a new exam (teacher only)
+app.post('/exams', (req, res) => {
+  const { title, date, pdf, teacher } = req.body;
+  if (!title || !date || !teacher) return res.status(400).json({ message: 'title, date and teacher are required' });
+
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
+
+  const exams = loadExams();
+  const newExam = { id: Date.now().toString(), title, description: '', pdf: pdf || null, date, teacher, createdAt: new Date().toISOString() };
+  exams.push(newExam);
+  saveExams(exams);
+  res.json({ message: 'تم إضافة الامتحان', exam: newExam });
+});
+
+// DELETE an exam (teacher can delete own, admin any)
+app.delete('/exams/:id', (req, res) => {
+  const { teacher } = req.body;
+  if (!teacher) return res.status(400).json({ message: 'teacher email required in body' });
+
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
+
+  const exams = loadExams();
+  const idx = exams.findIndex(e => e.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ message: 'امتحان غير موجود' });
+  if (user.role === 'teacher' && exams[idx].teacher !== teacher) return res.status(403).json({ message: 'لا يمكنك حذف امتحان لمعلم آخر' });
+
+  exams.splice(idx, 1);
+  saveExams(exams);
+  res.json({ message: 'تم حذف الامتحان' });
 });
 
 // 404 fallback

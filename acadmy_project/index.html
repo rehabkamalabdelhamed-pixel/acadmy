@@ -1347,6 +1347,27 @@
                 });
             }, 500);
 
+            // إذا المستخدم مسجل دخول لا تسمحي بالعودة للصفحة الرئيسية - وجهّي مباشرة إلى اللوحة المناسبة
+            const userRole = localStorage.getItem('userRole') || null;
+            if (userRole) {
+                if (userRole === 'admin') window.location.href = 'admin/dashboard.html';
+                else if (userRole === 'teacher') window.location.href = 'teacher/home.html';
+                else window.location.href = 'student/dashboard.html';
+            }
+
+            // منع الوصول للميزات عند عدم تسجيل الدخول: توجيه للصفحة login (كإجراء احتياطي)
+            const authSelectors = '.btn-programming, .btn-ai, .hero-btn, .continue-btn';
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest(authSelectors);
+                if (!btn) return;
+                if (e.target.closest('.user-btn')) return;
+                const email = localStorage.getItem('userEmail');
+                if (!email) {
+                    e.preventDefault();
+                    window.location.href = 'login/login.html';
+                }
+            });
+
             console.log('صفحة Coderaᴬᴵ جاهزة!');
         });
     </script>
