@@ -1,49 +1,65 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم المشرف</title>
+  <title>لوحة تحكم المشرف - Coderaᴬᴵ</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/theme.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
   <div class="row g-0 min-vh-100">
     <!-- الشريط الجانبي -->
-    <div class="col-lg-2 sidebar">
-      <div class="mb-4">
-        <h2 class="mb-4"><i class="bi bi-shield-lock"></i> لوحة المشرف</h2>
-        <div id="adminInfo" class="text-muted small"></div>
+    <div class="col-lg-2 sidebar pt-4">
+      <div class="mb-5 text-center px-3">
+        <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm mb-3"
+          style="width: 80px; height: 80px; color: var(--primary-600);">
+          <i class="bi bi-shield-lock-fill fs-1"></i>
+        </div>
+        <h2 class="mb-1 fw-bold text-white text-uppercase" style="font-size: 1.5rem; letter-spacing: 1px;">Codera<sup
+            style="font-size: 0.6em; margin-left: 2px;">ᴬᴵ</sup></h2>
+        <div id="adminInfo" class="badge bg-white text-primary mt-2"></div>
       </div>
-      <nav class="nav flex-column">
-        <a class="nav-link text-white active" href="#" data-tab="dashboard">
-          <i class="bi bi-bar-chart me-2"></i> الإحصائيات
+      <nav class="nav flex-column px-2 gap-2">
+        <a class="nav-link text-white active rounded-pill px-4 py-2" href="#" data-tab="dashboard">
+          <i class="bi bi-grid-1x2-fill me-2"></i> نظرة عامة
         </a>
-        <a class="nav-link text-white" href="#" data-tab="teachers">
-          <i class="bi bi-people me-2"></i> المدرسون
+        <a class="nav-link text-white rounded-pill px-4 py-2" href="#" data-tab="teachers">
+          <i class="bi bi-person-workspace me-2"></i> إدارة المدرسين
         </a>
-        <a class="nav-link text-white" href="#" data-tab="students">
-          <i class="bi bi-person-check me-2"></i> الطلاب
+        <a class="nav-link text-white rounded-pill px-4 py-2" href="#" data-tab="students">
+          <i class="bi bi-people-fill me-2"></i> إدارة الطلاب
         </a>
-        <a class="nav-link text-white" href="#" data-tab="videos">
-          <i class="bi bi-film me-2"></i> الفيديوهات
+        <a class="nav-link text-white rounded-pill px-4 py-2" href="#" data-tab="videos">
+          <i class="bi bi-play-btn-fill me-2"></i> المحتوى المرئي
         </a>
-        <hr class="border-secondary">
-        <a class="nav-link text-white" href="#" onclick="logout()">
+        <a class="nav-link text-white rounded-pill px-4 py-2" href="#" data-tab="exams">
+          <i class="bi bi-journal-check me-2"></i> إدارة الامتحانات
+        </a>
+        <a class="nav-link text-white rounded-pill px-4 py-2" href="#" data-tab="pdfs">
+          <i class="bi bi-file-earmark-pdf-fill me-2"></i> المذكرات (PDF)
+        </a>
+        <hr class="border-light opacity-25 my-3">
+        <a class="nav-link bg-danger text-white rounded-pill px-4 py-2 fw-bold mt-auto d-flex align-items-center justify-content-center shadow-sm mb-3"
+          href="#" onclick="logout()" style="transition: all 0.3s;">
           <i class="bi bi-box-arrow-left me-2"></i> تسجيل الخروج
         </a>
       </nav>
-      <div id="pdfTabsSection" class="mt-4">
+      <div id="pdfTabsSection" class="mt-4 px-3 d-none">
         <h6 class="mb-2 text-white">الامتحانات (PDF)</h6>
         <div id="pdfTabs" style="display:flex;gap:6px;overflow:auto;padding-bottom:6px"></div>
         <div class="mt-2">
           <input id="pdfFileInput" type="file" accept="application/pdf" style="display:none">
-          <button id="addPdfBtn" class="btn btn-sm btn-light"><i class="bi bi-file-earmark-pdf"></i> إضافة PDF</button>
+          <button id="addPdfBtn" class="btn btn-sm btn-light rounded-pill"><i class="bi bi-file-earmark-pdf"></i> إضافة
+            PDF</button>
         </div>
-        <small class="text-muted d-block mt-2">اضف ملفات PDF لظهورها كتبوِيبات. الملفات محلية أثناء الجلسة.</small>
+        <small class="text-white-50 d-block mt-2" style="font-size: 0.75rem;">اضف ملفات PDF لظهورها كتبوِيبات. الملفات
+          محلية أثناء الجلسة.</small>
       </div>
     </div>
 
@@ -51,41 +67,80 @@
     <div class="col-lg-10 main-content">
       <!-- الإحصائيات -->
       <div id="dashboardTab" class="tab-content">
-        <h2 class="mb-4">لوحة التحكم</h2>
-        <div class="row">
-          <div class="col-md-3 mb-3">
-            <div class="stat-box d-flex align-items-center gap-3">
-              <div><i class="bi bi-people-fill stat-icon"></i></div>
-              <div>
-                <div class="stat-number" id="usersCount">0</div>
-                <div class="stat-label">إجمالي المستخدمين</div>
+        <!-- Hero Section -->
+        <div class="hero-section mb-5"
+          style="background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-600) 100%);">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <h1 class="hero-title">مرحباً بصلاحيات الإدارة 🛡️</h1>
+              <p class="hero-subtitle text-white-50">أنت تملك التحكم الكامل بالمنصة؛ المدرسون، الطلاب، والمحتوى.</p>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+              <i class="bi bi-shield-lock-fill" style="font-size: 8rem; opacity: 0.8;"></i>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-bar-chart-fill text-danger me-2"></i> نظرة عامة على المنصة
+        </h4>
+        <div class="row g-4 mb-5">
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100"
+              style="border-radius: 16px; background: linear-gradient(145deg, #ffffff, #fdfdfd);">
+              <div class="card-body p-4 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  style="width: 60px; height: 60px; background: rgba(var(--primary-600-rgb), 0.1); color: var(--primary-600);">
+                  <i class="bi bi-people-fill fs-2"></i>
+                </div>
+                <div>
+                  <h3 class="stat-number mb-0 fw-bold text-dark" id="usersCount" style="font-size: 2rem;">0</h3>
+                  <small class="text-muted fw-bold">إجمالي المستخدمين</small>
+                </div>
               </div>
             </div>
           </div>
-          <div class="col-md-3 mb-3">
-            <div class="stat-box d-flex align-items-center gap-3">
-              <div><i class="bi bi-person-badge stat-icon"></i></div>
-              <div>
-                <div class="stat-number" id="teachersCount">0</div>
-                <div class="stat-label">المدرسون</div>
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100"
+              style="border-radius: 16px; background: linear-gradient(145deg, #ffffff, #fdfdfd);">
+              <div class="card-body p-4 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  style="width: 60px; height: 60px; background: rgba(var(--success-600-rgb), 0.1); color: var(--success-600);">
+                  <i class="bi bi-person-workspace fs-2"></i>
+                </div>
+                <div>
+                  <h3 class="stat-number mb-0 fw-bold text-dark" id="teachersCount" style="font-size: 2rem;">0</h3>
+                  <small class="text-muted fw-bold">المدرسون</small>
+                </div>
               </div>
             </div>
           </div>
-          <div class="col-md-3 mb-3">
-            <div class="stat-box d-flex align-items-center gap-3">
-              <div><i class="bi bi-person-check stat-icon"></i></div>
-              <div>
-                <div class="stat-number" id="studentsCount">0</div>
-                <div class="stat-label">الطلاب</div>
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100"
+              style="border-radius: 16px; background: linear-gradient(145deg, #ffffff, #fdfdfd);">
+              <div class="card-body p-4 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  style="width: 60px; height: 60px; background: rgba(var(--warning-600-rgb), 0.1); color: var(--warning-600);">
+                  <i class="bi bi-person-check-fill fs-2"></i>
+                </div>
+                <div>
+                  <h3 class="stat-number mb-0 fw-bold text-dark" id="studentsCount" style="font-size: 2rem;">0</h3>
+                  <small class="text-muted fw-bold">الطلاب التفاعليين</small>
+                </div>
               </div>
             </div>
           </div>
-          <div class="col-md-3 mb-3">
-            <div class="stat-box d-flex align-items-center gap-3">
-              <div><i class="bi bi-play-btn stat-icon"></i></div>
-              <div>
-                <div class="stat-number" id="videosCount">0</div>
-                <div class="stat-label">الفيديوهات</div>
+          <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100"
+              style="border-radius: 16px; background: linear-gradient(145deg, #ffffff, #fdfdfd);">
+              <div class="card-body p-4 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  style="width: 60px; height: 60px; background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                  <i class="bi bi-play-btn-fill fs-2"></i>
+                </div>
+                <div>
+                  <h3 class="stat-number mb-0 fw-bold text-dark" id="videosCount" style="font-size: 2rem;">0</h3>
+                  <small class="text-muted fw-bold">إجمالي الفيديوهات</small>
+                </div>
               </div>
             </div>
           </div>
@@ -94,68 +149,141 @@
 
       <!-- المدرسون -->
       <div id="teachersTab" class="tab-content d-none">
-        <h2 class="mb-4">إدارة المدرسون</h2>
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>البريد الإلكتروني</th>
-                <th>الدور</th>
-              </tr>
-            </thead>
-            <tbody id="teachersList"></tbody>
-          </table>
+        <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-person-workspace text-primary me-2"></i> إدارة المدرسين</h2>
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="bg-light">
+                <tr>
+                  <th class="py-3 px-4 border-0">حساب المدرس (البريد الإلكتروني)</th>
+                  <th class="py-3 px-4 border-0 text-end">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="teachersList"></tbody>
+            </table>
+          </div>
+          <div id="teachersPagination" class="mt-3"></div>
         </div>
       </div>
 
       <!-- الطلاب -->
       <div id="studentsTab" class="tab-content d-none">
-        <h2 class="mb-4">إدارة الطلاب</h2>
-        <div class="input-group mb-3">
-          <input type="text" id="searchStudents" class="form-control" placeholder="ابحث عن طالب...">
+        <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-people-fill text-primary me-2"></i> إدارة الطلاب</h2>
+        <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px;">
+          <div class="input-group drop-shadow-sm">
+            <span class="input-group-text bg-light border-0" style="border-radius: 0 12px 12px 0;"><i
+                class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchStudents" class="form-control bg-light border-0 py-2"
+              placeholder="ابحث عن طالب بالبريد الإلكتروني..." style="border-radius: 12px 0 0 12px;">
+          </div>
         </div>
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>البريد الإلكتروني</th>
-                <th>تاريخ التسجيل</th>
-              </tr>
-            </thead>
-            <tbody id="studentsList"></tbody>
-          </table>
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="bg-light">
+                <tr>
+                  <th class="py-3 px-4 border-0">حساب الطالب</th>
+                  <th class="py-3 px-4 border-0 text-end">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="studentsList"></tbody>
+            </table>
+          </div>
+          <div id="studentsPagination" class="mt-3"></div>
         </div>
       </div>
 
       <!-- الفيديوهات -->
       <div id="videosTab" class="tab-content d-none">
-        <h2 class="mb-4">إدارة الفيديوهات</h2>
-        <div class="mb-3 subject-filters">
-          <div class="btn-group" role="group" aria-label="subjects">
-            <button class="btn btn-sm pill-prog" data-subject="" onclick="filterBySubject('')"><i class="bi bi-code-slash icon-sm"></i> جميع المواد</button>
-            <button class="btn btn-sm pill-prog" data-subject="برمجة وذكاء اصطناعي" onclick="filterBySubject('برمجة وذكاء اصطناعي')"><i class="bi bi-laptop icon-sm"></i> برمجة وذكاء اصطناعي</button>
-            <button class="btn btn-sm pill-js" data-subject="جافا اسكربت" onclick="filterBySubject('جافا اسكربت')"><i class="bi bi-file-code icon-sm"></i> جافا اسكربت</button>
+        <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-film text-danger me-2"></i> المحتوى المرئي (الفيديوهات)</h2>
+        <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px;">
+          <div class="row g-3 align-items-center">
+            <div class="col-md-7 subject-filters">
+              <div class="btn-group" role="group" aria-label="subjects">
+                <button class="btn btn-outline-secondary rounded-pill me-2 px-3 fw-bold" data-subject=""
+                  onclick="filterBySubject('')"><i class="bi bi-collection-fill icon-sm"></i> الكل</button>
+                <button class="btn btn-outline-primary rounded-pill me-2 px-3 fw-bold"
+                  data-subject="برمجة وذكاء اصطناعي" onclick="filterBySubject('برمجة وذكاء اصطناعي')"><i
+                    class="bi bi-laptop icon-sm"></i> برمجة وذكاء اصطناعي</button>
+                <button class="btn btn-outline-warning rounded-pill px-3 fw-bold" data-subject="جافا اسكربت"
+                  onclick="filterBySubject('جافا اسكربت')"><i class="bi bi-file-code icon-sm"></i> جافا اسكربت</button>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="input-group drop-shadow-sm">
+                <span class="input-group-text bg-light border-0" style="border-radius: 0 12px 12px 0;"><i
+                    class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchVideos" class="form-control bg-light border-0 py-2"
+                  placeholder="ابحث عن فيديو..." style="border-radius: 12px 0 0 12px;">
+                <input type="hidden" id="filterCategory" value="">
+              </div>
+            </div>
           </div>
         </div>
-        <div class="input-group mb-3">
-          <input type="text" id="searchVideos" class="form-control" placeholder="ابحث عن فيديو...">
-          <input type="hidden" id="filterCategory" value="">
-        </div>
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead class="table-light">
-              <tr>
-                <th><i class="bi bi-file-earmark-play"></i> العنوان</th>
-                <th><i class="bi bi-person-badge"></i> المدرس</th>
-                <th><i class="bi bi-tag"></i> التصنيف</th>
-                <th><i class="bi bi-calendar-event"></i> التاريخ</th>
-                <th><i class="bi bi-gear"></i> الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody id="videosList"></tbody>
-          </table>
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="bg-light">
+                <tr>
+                  <th class="py-3 px-4 border-0"><i class="bi bi-camera-video"></i> العنوان</th>
+                  <th class="py-3 px-4 border-0"><i class="bi bi-person-badge"></i> المدرس الناشر</th>
+                  <th class="py-3 px-4 border-0"><i class="bi bi-tag"></i> التصنيف</th>
+                  <th class="py-3 px-4 border-0 text-muted"><i class="bi bi-calendar-event"></i> الرفع</th>
+                  <th class="py-3 px-4 border-0 text-end">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="videosList"></tbody>
+            </table>
+          </div>
+          <div id="videosPagination" class="mt-3"></div>
         </div>
       </div>
+
+      <!-- الامتحانات -->
+      <div id="examsTab" class="tab-content d-none">
+        <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-journal-check text-success me-2"></i> إدارة الامتحانات</h2>
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="bg-light">
+                <tr>
+                  <th class="py-3 px-4 border-0">العنوان</th>
+                  <th class="py-3 px-4 border-0">المدرس الناشر</th>
+                  <th class="py-3 px-4 border-0">التصنيف</th>
+                  <th class="py-3 px-4 border-0 text-muted">التاريخ</th>
+                  <th class="py-3 px-4 border-0 text-end">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="examsListAdmin"></tbody>
+            </table>
+          </div>
+          <div id="examsPagination" class="mt-3"></div>
+        </div>
+      </div>
+
+      <!-- المذكرات (PDF) -->
+      <div id="pdfsTab" class="tab-content d-none">
+        <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i> المذكرات (PDF)
+        </h2>
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="bg-light">
+                <tr>
+                  <th class="py-3 px-4 border-0">العنوان</th>
+                  <th class="py-3 px-4 border-0">المدرس الناشر</th>
+                  <th class="py-3 px-4 border-0">الرابط</th>
+                  <th class="py-3 px-4 border-0 text-muted">التاريخ</th>
+                  <th class="py-3 px-4 border-0 text-end">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="pdfsListAdmin"></tbody>
+            </table>
+          </div>
+          <div id="pdfsPagination" class="mt-3"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -203,14 +331,14 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    function getCatBadge(cat){
+    function getCatBadge(cat) {
       const key = cat || '';
-      if(key === 'برمجة وذكاء اصطناعي') return `<span class="badge-category pill-prog subject-label"><i class="bi bi-laptop icon-sm"></i> ${cat}</span>`;
-      if(key === 'جافا اسكربت') return `<span class="badge-category pill-js subject-label"><i class="bi bi-file-code icon-sm"></i> ${cat}</span>`;
+      if (key === 'برمجة وذكاء اصطناعي') return `<span class="badge-category pill-prog subject-label"><i class="bi bi-laptop icon-sm"></i> ${cat}</span>`;
+      if (key === 'جافا اسكربت') return `<span class="badge-category pill-js subject-label"><i class="bi bi-file-code icon-sm"></i> ${cat}</span>`;
       return `<span class="badge-category bg-light text-muted">${cat}</span>`;
     }
 
-    function filterBySubject(subject){
+    function filterBySubject(subject) {
       document.getElementById('filterCategory').value = subject;
       document.getElementById('searchVideos').value = '';
       filterVideos();
@@ -221,13 +349,24 @@
     let adminEmail = localStorage.getItem('userEmail') || 'admin12345@gmail.com';
     let allUsers = [];
     let allVideos = [];
+    let allExams = [];
+    let allPdfs = [];
     let currentEditVideoId = null;
+
+    const ITEMS_PER_PAGE = 6;
+    let teacherPage = 1;
+    let studentPage = 1;
+    let videoPage = 1;
+    let examPage = 1;
+    let pdfPage = 1;
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminInfo').textContent = adminEmail;
       loadStats();
       loadAllUsers();
       loadAllVideos();
+      loadAllExams();
+      loadAllPdfs();
       setupEventListeners();
     });
 
@@ -281,58 +420,76 @@
       const teachers = allUsers.filter(u => u.role === 'teacher');
       const list = document.getElementById('teachersList');
       list.innerHTML = '';
-      
+
       if (teachers.length === 0) {
-        list.innerHTML = '<tr><td colspan="2" class="text-muted text-center py-4"><i class="bi bi-inbox"></i> لا توجد مدرسون</td></tr>';
+        list.innerHTML = '<tr><td colspan="2" class="text-muted text-center py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i> لا يوجد مدرسون</td></tr>';
+        document.getElementById('teachersPagination').innerHTML = '';
         return;
       }
 
-      teachers.forEach(teacher => {
+      const start = (teacherPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const paginatedTeachers = teachers.slice(start, end);
+
+      paginatedTeachers.forEach(teacher => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><i class="bi bi-person-badge"></i> ${teacher.email}</td>
-          <td class="text-end">
-            <span class="badge bg-primary"><i class="bi bi-person-check"></i> مدرس</span>
-            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteTeacher('${teacher.email}')">
-              <i class="bi bi-trash"></i>
+          <td class="py-3 px-4 fw-bold text-dark"><i class="bi bi-person-circle text-primary me-2"></i> ${teacher.email}</td>
+          <td class="text-end py-3 px-4">
+            <span class="badge bg-primary rounded-pill px-3 py-2"><i class="bi bi-person-check"></i> مدرس</span>
+            <button class="btn btn-sm btn-light text-danger rounded-circle ms-2" style="width: 32px; height: 32px; padding: 0;" onclick="deleteTeacher('${teacher.email}')" title="حذف المدرس">
+              <i class="bi bi-trash3-fill"></i>
             </button>
           </td>
         `;
         list.appendChild(row);
+      });
+
+      createPagination('teachersPagination', teachers.length, ITEMS_PER_PAGE, teacherPage, (p) => {
+        teacherPage = p;
+        renderTeachers();
       });
     }
 
     function renderStudents() {
-      const students = allUsers.filter(u => u.role === 'student');
+      const search = document.getElementById('searchStudents').value.toLowerCase();
+      const students = allUsers.filter(u => u.role === 'student' && u.email.toLowerCase().includes(search));
       const list = document.getElementById('studentsList');
       list.innerHTML = '';
-      
+
       if (students.length === 0) {
-        list.innerHTML = '<tr><td colspan="2" class="text-muted text-center py-4"><i class="bi bi-inbox"></i> لا توجد طلاب حتى الآن</td></tr>';
+        list.innerHTML = '<tr><td colspan="2" class="text-muted text-center py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i> لا يوجد طلاب حتى الآن</td></tr>';
+        document.getElementById('studentsPagination').innerHTML = '';
         return;
       }
 
-      students.forEach(student => {
+      const start = (studentPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const paginatedStudents = students.slice(start, end);
+
+      paginatedStudents.forEach(student => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><i class="bi bi-person-circle"></i> ${student.email}</td>
-          <td class="text-end">
-            <small class="text-muted"><i class="bi bi-calendar"></i> جديد</small>
-            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteStudent('${student.email}')">
-              <i class="bi bi-trash"></i>
+          <td class="py-3 px-4 fw-bold text-dark"><i class="bi bi-person-circle text-success me-2"></i> ${student.email}</td>
+          <td class="text-end py-3 px-4">
+            <span class="badge bg-light border text-secondary rounded-pill px-3 py-2"><i class="bi bi-calendar"></i> طالب</span>
+            <button class="btn btn-sm btn-light text-danger rounded-circle ms-2" style="width: 32px; height: 32px; padding: 0;" onclick="deleteStudent('${student.email}')" title="حذف الطالب">
+              <i class="bi bi-trash3-fill"></i>
             </button>
           </td>
         `;
         list.appendChild(row);
       });
+
+      createPagination('studentsPagination', students.length, ITEMS_PER_PAGE, studentPage, (p) => {
+        studentPage = p;
+        renderStudents();
+      });
     }
 
     function filterStudents() {
-      const search = document.getElementById('searchStudents').value.toLowerCase();
-      document.querySelectorAll('#studentsList tr').forEach(row => {
-        const email = row.textContent.toLowerCase();
-        row.style.display = email.includes(search) ? '' : 'none';
-      });
+      studentPage = 1;
+      renderStudents();
     }
 
     async function loadAllVideos() {
@@ -348,42 +505,53 @@
     function renderVideos(videos) {
       const list = document.getElementById('videosList');
       list.innerHTML = '';
-      
+
       if (videos.length === 0) {
-        list.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-4"><i class="bi bi-inbox"></i> لا توجد فيديوهات</td></tr>';
+        list.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i> لا توجد فيديوهات</td></tr>';
+        document.getElementById('videosPagination').innerHTML = '';
         return;
       }
 
-      videos.forEach(video => {
+      const start = (videoPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const paginatedVideos = videos.slice(start, end);
+
+      paginatedVideos.forEach(video => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><strong><i class="bi bi-file-earmark-play"></i> ${video.title}</strong></td>
-          <td><i class="bi bi-person-badge"></i> ${video.teacher}</td>
-          <td>${getCatBadge(video.category)}</td>
-          <td><small><i class="bi bi-calendar-event"></i> ${new Date(video.createdAt).toLocaleDateString('ar-EG')}</small></td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-warning" onclick="openEditVideoModal('${video.id}')" title="تعديل">
+          <td class="py-3 px-4 fw-bold text-dark"><i class="bi bi-play-circle-fill text-danger me-2"></i> ${video.title}</td>
+          <td class="py-3 px-4"><span class="badge bg-light text-dark border"><i class="bi bi-person-badge text-primary me-1"></i> ${video.teacher}</span></td>
+          <td class="py-3 px-4">${getCatBadge(video.category)}</td>
+          <td class="py-3 px-4 text-muted small fw-semibold"><i class="bi bi-calendar-event text-primary me-1"></i> ${new Date(video.createdAt).toLocaleDateString('ar-EG')}</td>
+          <td class="py-3 px-4 text-end">
+            <button class="btn btn-sm btn-light text-warning rounded-circle shadow-sm me-1" style="width: 32px; height: 32px; padding: 0;" onclick="openEditVideoModal('${video.id}')" title="تعديل">
               <i class="bi bi-pencil-square"></i>
             </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteVideo('${video.id}')" title="حذف">
-              <i class="bi bi-trash"></i>
+            <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 0;" onclick="deleteVideo('${video.id}')" title="حذف">
+              <i class="bi bi-trash3-fill"></i>
             </button>
           </td>
         `;
         list.appendChild(row);
       });
+
+      createPagination('videosPagination', videos.length, ITEMS_PER_PAGE, videoPage, (p) => {
+        videoPage = p;
+        renderVideos(videos);
+      });
     }
 
     function filterVideos() {
+      videoPage = 1;
       const search = document.getElementById('searchVideos').value.toLowerCase();
       const category = document.getElementById('filterCategory').value;
-      
+
       const filtered = allVideos.filter(v => {
         const titleMatch = v.title.toLowerCase().includes(search);
         const categoryMatch = category === '' || v.category === category;
         return titleMatch && categoryMatch;
       });
-      
+
       renderVideos(filtered);
     }
 
@@ -529,14 +697,164 @@
       }).then((result) => {
         if (result.isConfirmed) {
           localStorage.removeItem('userEmail');
+          localStorage.removeItem('userRole');
           window.location.href = '../login/login.html';
         }
       });
     }
+
+    async function loadAllExams() {
+      try {
+        const res = await fetch(`${API_URL}/exams`);
+        allExams = await res.json();
+        renderExamsAdmin();
+      } catch (err) { console.error('خطأ في تحميل الامتحانات:', err); }
+    }
+
+    async function loadAllPdfs() {
+      try {
+        const res = await fetch(`${API_URL}/pdfs`);
+        allPdfs = await res.json();
+        renderPdfsAdmin();
+      } catch (err) { console.error('خطأ في تحميل المذكرات:', err); }
+    }
+
+    function renderExamsAdmin() {
+      const list = document.getElementById('examsListAdmin');
+      list.innerHTML = '';
+      if (allExams.length === 0) {
+        list.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i> لا توجد امتحانات</td></tr>';
+        document.getElementById('examsPagination').innerHTML = '';
+        return;
+      }
+
+      const start = (examPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const paginatedExams = allExams.slice(start, end);
+
+      paginatedExams.forEach(ex => {
+        list.innerHTML += `<tr>
+          <td class="py-3 px-4 fw-bold text-dark"><i class="bi bi-journal-check text-success me-2"></i> ${ex.title}</td>
+          <td class="py-3 px-4"><span class="badge bg-light text-dark border"> ${ex.teacher}</span></td>
+          <td class="py-3 px-4">${getCatBadge(ex.subject || 'مواد أخرى')}</td>
+          <td class="py-3 px-4 text-muted small fw-semibold"><i class="bi bi-calendar-event text-primary me-1"></i> ${new Date(ex.createdAt).toLocaleDateString('ar-EG')}</td>
+          <td class="text-end py-3 px-4">
+            <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 0;" onclick="deleteExam('${ex.id}')" title="حذف"><i class="bi bi-trash3-fill"></i></button>
+          </td>
+        </tr>`;
+      });
+
+      createPagination('examsPagination', allExams.length, ITEMS_PER_PAGE, examPage, (p) => {
+        examPage = p;
+        renderExamsAdmin();
+      });
+    }
+
+    function renderPdfsAdmin() {
+      const list = document.getElementById('pdfsListAdmin');
+      list.innerHTML = '';
+      if (allPdfs.length === 0) {
+        list.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i> لا توجد مذكرات</td></tr>';
+        document.getElementById('pdfsPagination').innerHTML = '';
+        return;
+      }
+
+      const start = (pdfPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const paginatedPdfs = allPdfs.slice(start, end);
+
+      paginatedPdfs.forEach(pdf => {
+        list.innerHTML += `<tr>
+          <td class="py-3 px-4 fw-bold text-dark"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i> ${pdf.title}</td>
+          <td class="py-3 px-4"><span class="badge bg-light text-dark border"> ${pdf.teacher}</span></td>
+          <td class="py-3 px-4 text-truncate" style="max-width: 150px;"><a href="${pdf.url}" target="_blank" class="text-decoration-none">عرض الملف</a></td>
+          <td class="py-3 px-4 text-muted small fw-semibold"><i class="bi bi-calendar-event text-primary me-1"></i> ${new Date(pdf.createdAt).toLocaleDateString('ar-EG')}</td>
+          <td class="text-end py-3 px-4">
+           <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 0;" onclick="deletePdf('${pdf.id}')" title="حذف"><i class="bi bi-trash3-fill"></i></button>
+          </td>
+        </tr>`;
+      });
+
+      createPagination('pdfsPagination', allPdfs.length, ITEMS_PER_PAGE, pdfPage, (p) => {
+        pdfPage = p;
+        renderPdfsAdmin();
+      });
+    }
+
+    function createPagination(containerId, totalItems, itemsPerPage, currentPage, onPageChange) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      container.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      const nav = document.createElement('nav');
+      const ul = document.createElement('ul');
+      ul.className = 'pagination pagination-sm justify-content-center mb-0 gap-2';
+
+      // Previous button
+      const prevLi = document.createElement('li');
+      prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+      prevLi.innerHTML = `
+        <a class="page-link rounded-circle border-0 shadow-sm d-flex align-items-center justify-content-center" href="javascript:void(0)" aria-label="Previous" style="width: 32px; height: 32px;">
+          <span aria-hidden="true">&laquo;</span>
+        </a>`;
+      if (currentPage > 1) {
+        prevLi.addEventListener('click', () => onPageChange(currentPage - 1));
+      }
+      ul.appendChild(prevLi);
+
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `
+          <a class="page-link rounded-circle border-0 shadow-sm d-flex align-items-center justify-content-center fw-bold" href="javascript:void(0)" style="width: 32px; height: 32px; ${i === currentPage ? 'background-color: #0d6efd; color: #fff;' : 'background-color: #fff;'}">
+            ${i}
+          </a>`;
+        li.addEventListener('click', () => onPageChange(i));
+        ul.appendChild(li);
+      }
+
+      // Next button
+      const nextLi = document.createElement('li');
+      nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+      nextLi.innerHTML = `
+        <a class="page-link rounded-circle border-0 shadow-sm d-flex align-items-center justify-content-center" href="javascript:void(0)" aria-label="Next" style="width: 32px; height: 32px;">
+          <span aria-hidden="true">&raquo;</span>
+        </a>`;
+      if (currentPage < totalPages) {
+        nextLi.addEventListener('click', () => onPageChange(currentPage + 1));
+      }
+      ul.appendChild(nextLi);
+
+      nav.appendChild(ul);
+      container.appendChild(nav);
+    }
+
+    async function deleteExam(id) {
+      const result = await Swal.fire({ title: 'هل تريد حذف هذا الامتحان؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
+      if (!result.isConfirmed) return;
+      try {
+        const res = await fetch(`${API_URL}/exams/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ teacher: adminEmail }) });
+        if (res.ok) { Swal.fire('تم!', 'تم الحذف بنجاح', 'success'); loadAllExams(); }
+      } catch (err) { }
+    }
+
+    async function deletePdf(id) {
+      const result = await Swal.fire({ title: 'هل تريد حذف هذه المذكرة؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
+      if (!result.isConfirmed) return;
+      try {
+        const res = await fetch(`${API_URL}/pdfs/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ teacher: adminEmail }) });
+        if (res.ok) { Swal.fire('تم!', 'تم الحذف بنجاح', 'success'); loadAllPdfs(); }
+      } catch (err) { }
+    }
   </script>
   <script>
     // ---------------------- PDF tabs (sidebar) ----------------------
-    (function initPdfTabs(){
+    (function initPdfTabs() {
       const pdfTabs = document.getElementById('pdfTabs');
       const input = document.getElementById('pdfFileInput');
       const addBtn = document.getElementById('addPdfBtn');
@@ -545,7 +863,7 @@
       if (!document.getElementById('pdfViewerModal')) {
         const modal = document.createElement('div');
         modal.id = 'pdfViewerModal';
-        Object.assign(modal.style, {position:'fixed',top:0,left:0,width:'100%',height:'100%',background:'rgba(0,0,0,0.7)',display:'none',alignItems:'center',justifyContent:'center',zIndex:9999});
+        Object.assign(modal.style, { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', display: 'none', alignItems: 'center', justifyContent: 'center', zIndex: 9999 });
         modal.innerHTML = `<div style="width:90%;height:90%;background:#fff;position:relative;border-radius:6px;overflow:hidden">
           <button id="pdfModalClose" style="position:absolute;left:10px;top:10px;z-index:2" class="btn btn-sm btn-danger">إغلاق</button>
           <iframe id="pdfViewerFrame" style="width:100%;height:100%;border:0"></iframe>
@@ -595,4 +913,5 @@
     })();
   </script>
 </body>
+
 </html>

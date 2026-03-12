@@ -129,16 +129,16 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Max-Age', '3600');
-  
+
   // Security headers
   res.header('X-Content-Type-Options', 'nosniff');
   res.header('X-XSS-Protection', '1; mode=block');
-  
+
   // Respond to OPTIONS requests immediately
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
-  
+
   next();
 });
 
@@ -219,16 +219,16 @@ app.post('/login', (req, res) => {
 app.get('/videos', (req, res) => {
   const category = req.query.category;
   const teacherEmail = req.query.teacher;
-  
+
   let videos = loadVideos();
-  
+
   if (category) {
     videos = videos.filter(v => v.category === category);
   }
   if (teacherEmail) {
     videos = videos.filter(v => v.teacher === teacherEmail);
   }
-  
+
   res.json(videos);
 });
 
@@ -236,29 +236,29 @@ app.get('/videos', (req, res) => {
 app.get('/videos/:id', (req, res) => {
   const videos = loadVideos();
   const video = videos.find(v => v.id === req.params.id);
-  
+
   if (!video) {
     return res.status(404).json({ message: 'فيديو غير موجود' });
   }
-  
+
   res.json(video);
 });
 
 // POST create new video (teacher only)
 app.post('/videos', (req, res) => {
   const { title, description, url, category, teacher } = req.body;
-  
+
   if (!title || !url || !category || !teacher) {
     return res.status(400).json({ message: 'عنوان ورابط والتصنيف والمدرس مطلوبة' });
   }
-  
+
   const users = loadUsers();
   const user = users.find(u => u.email === teacher);
-  
+
   if (!user || user.role !== 'teacher') {
     return res.status(403).json({ message: 'فقط المدرسون يمكنهم إضافة فيديوهات' });
   }
-  
+
   const videos = loadVideos();
   const newVideo = {
     id: Date.now().toString(),
@@ -270,81 +270,81 @@ app.post('/videos', (req, res) => {
     createdAt: new Date().toISOString(),
     duration: 0 // can be updated later
   };
-  
+
   videos.push(newVideo);
   saveVideos(videos);
-  
+
   res.json({ message: 'تم إضافة الفيديو بنجاح', video: newVideo });
 });
 
 // DELETE video (teacher can delete own, admin can delete any)
 app.delete('/videos/:id', (req, res) => {
   const { teacher } = req.body;
-  
+
   if (!teacher) {
     return res.status(400).json({ message: 'البريد الإلكتروني للمدرس مطلوب' });
   }
-  
+
   const users = loadUsers();
   const user = users.find(u => u.email === teacher);
-  
+
   if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
     return res.status(403).json({ message: 'ليس لديك صلاحية' });
   }
-  
+
   const videos = loadVideos();
   const videoIndex = videos.findIndex(v => v.id === req.params.id);
-  
+
   if (videoIndex === -1) {
     return res.status(404).json({ message: 'فيديو غير موجود' });
   }
-  
+
   // teacher can only delete own videos
   if (user.role === 'teacher' && videos[videoIndex].teacher !== teacher) {
     return res.status(403).json({ message: 'لا يمكنك حذف فيديو لمدرس آخر' });
   }
-  
+
   videos.splice(videoIndex, 1);
   saveVideos(videos);
-  
+
   res.json({ message: 'تم حذف الفيديو بنجاح' });
 });
 
 // PUT update video (teacher can update own, admin can update any)
 app.put('/videos/:id', (req, res) => {
   const { title, description, url, category, teacher } = req.body;
-  
+
   if (!teacher) {
     return res.status(400).json({ message: 'البريد الإلكتروني للمدرس مطلوب' });
   }
-  
+
   const users = loadUsers();
   const user = users.find(u => u.email === teacher);
-  
+
   if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
     return res.status(403).json({ message: 'ليس لديك صلاحية' });
   }
-  
+
   const videos = loadVideos();
   const videoIndex = videos.findIndex(v => v.id === req.params.id);
-  
+
   if (videoIndex === -1) {
     return res.status(404).json({ message: 'فيديو غير موجود' });
   }
-  
+
   // teacher can only update own videos
   if (user.role === 'teacher' && videos[videoIndex].teacher !== teacher) {
     return res.status(403).json({ message: 'لا يمكنك تعديل فيديو لمدرس آخر' });
   }
-  
+
   // update fields
   if (title !== undefined) videos[videoIndex].title = title;
   if (description !== undefined) videos[videoIndex].description = description;
   if (url !== undefined) videos[videoIndex].url = url;
   if (category !== undefined) videos[videoIndex].category = category;
-  
+
   saveVideos(videos);
-  
+
   res.json({ message: 'تم تحديث الفيديو بنجاح', video: videos[videoIndex] });
 });
 
@@ -354,28 +354,28 @@ app.put('/videos/:id', (req, res) => {
 app.get('/progress/:studentEmail', (req, res) => {
   const progress = loadProgress();
   const studentProgress = progress.filter(p => p.student === req.params.studentEmail);
-  
+
   res.json(studentProgress);
 });
 
 // POST record video watch/completion
 app.post('/progress', (req, res) => {
   const { student, videoId, status, progress: percent } = req.body;
-  
+
   if (!student || !videoId) {
     return res.status(400).json({ message: 'البريد الإلكتروني والفيديو مطلوبان' });
   }
-  
+
   const users = loadUsers();
   const user = users.find(u => u.email === student);
-  
+
   if (!user || user.role !== 'student') {
     return res.status(403).json({ message: 'فقط الطلاب يمكنهم تسجيل التقدم' });
   }
-  
+
   let progressList = loadProgress();
   const existingIndex = progressList.findIndex(p => p.student === student && p.videoId === videoId);
-  
+
   const progressEntry = {
     student,
     videoId,
@@ -383,15 +383,15 @@ app.post('/progress', (req, res) => {
     percent: percent || 0,
     lastUpdated: new Date().toISOString()
   };
-  
+
   if (existingIndex !== -1) {
     progressList[existingIndex] = progressEntry;
   } else {
     progressList.push(progressEntry);
   }
-  
+
   saveProgress(progressList);
-  
+
   res.json({ message: 'تم تحديث التقدم', progress: progressEntry });
 });
 
@@ -401,18 +401,18 @@ app.post('/progress', (req, res) => {
 app.get('/admin/users', (req, res) => {
   const adminEmail = req.query.admin;
   const users = loadUsers();
-  
+
   const admin = users.find(u => u.email === adminEmail);
   if (!admin || admin.role !== 'admin') {
     return res.status(403).json({ message: 'ليس لديك صلاحية' });
   }
-  
+
   // return all users but without passwords
   const safeUsers = users.map(u => ({
     email: u.email,
     role: u.role
   }));
-  
+
   res.json(safeUsers);
 });
 
@@ -420,15 +420,15 @@ app.get('/admin/users', (req, res) => {
 app.get('/admin/stats', (req, res) => {
   const email = req.query.email;
   const users = loadUsers();
-  
+
   const user = users.find(u => u.email === email);
   if (!user || (user.role !== 'admin' && user.role !== 'teacher')) {
     return res.status(403).json({ message: 'ليس لديك صلاحية' });
   }
-  
+
   const videos = loadVideos();
   const progress = loadProgress();
-  
+
   let stats = {
     totalUsers: users.length,
     totalTeachers: users.filter(u => u.role === 'teacher').length,
@@ -436,12 +436,12 @@ app.get('/admin/stats', (req, res) => {
     totalVideos: videos.length,
     totalProgress: progress.length
   };
-  
+
   // teacher can only see own stats
   if (user.role === 'teacher') {
     stats.myVideos = videos.filter(v => v.teacher === email).length;
   }
-  
+
   res.json(stats);
 });
 
@@ -560,9 +560,31 @@ app.delete('/pdfs/:id', (req, res) => {
   res.json({ message: 'تم حذف PDF' });
 });
 
+// PUT update a PDF (teacher can edit own, admin any)
+app.put('/pdfs/:id', (req, res) => {
+  const { title, url, teacher } = req.body;
+  if (!teacher) return res.status(400).json({ message: 'teacher email required' });
+
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
+
+  const pdfs = loadPdfs();
+  const idx = pdfs.findIndex(p => p.id === req.params.id);
+
+  if (idx === -1) return res.status(404).json({ message: 'PDF غير موجود' });
+  if (user.role === 'teacher' && pdfs[idx].teacher !== teacher) return res.status(403).json({ message: 'لا يمكنك تعديل PDF لمعلم آخر' });
+
+  if (title !== undefined) pdfs[idx].title = title;
+  if (url !== undefined) pdfs[idx].url = url;
+
+  savePdfs(pdfs);
+  res.json({ message: 'تم تعديل PDF بنجاح', pdf: pdfs[idx] });
+});
+
 // CREATE a new exam (teacher only)
 app.post('/exams', (req, res) => {
-  const { title, date, pdf, teacher } = req.body;
+  const { title, date, pdf, teacher, subject, link } = req.body;
   if (!title || !date || !teacher) return res.status(400).json({ message: 'title, date and teacher are required' });
 
   const users = loadUsers();
@@ -570,7 +592,7 @@ app.post('/exams', (req, res) => {
   if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
 
   const exams = loadExams();
-  const newExam = { id: Date.now().toString(), title, description: '', pdf: pdf || null, date, teacher, createdAt: new Date().toISOString() };
+  const newExam = { id: Date.now().toString(), title, description: '', pdf: pdf || null, date, teacher, subject: subject || 'مواد أخرى', link: link || '', createdAt: new Date().toISOString() };
   exams.push(newExam);
   saveExams(exams);
   res.json({ message: 'تم إضافة الامتحان', exam: newExam });
@@ -595,9 +617,34 @@ app.delete('/exams/:id', (req, res) => {
   res.json({ message: 'تم حذف الامتحان' });
 });
 
+// PUT update an exam (teacher can edit own, admin any)
+app.put('/exams/:id', (req, res) => {
+  const { title, date, pdf, subject, link, teacher } = req.body;
+  if (!teacher) return res.status(400).json({ message: 'teacher email required' });
+
+  const users = loadUsers();
+  const user = users.find(u => u.email === teacher);
+  if (!user || (user.role !== 'teacher' && user.role !== 'admin')) return res.status(403).json({ message: 'ليس لديك صلاحية' });
+
+  const exams = loadExams();
+  const idx = exams.findIndex(e => e.id === req.params.id);
+
+  if (idx === -1) return res.status(404).json({ message: 'امتحان غير موجود' });
+  if (user.role === 'teacher' && exams[idx].teacher !== teacher) return res.status(403).json({ message: 'لا يمكنك تعديل امتحان لمعلم آخر' });
+
+  if (title !== undefined) exams[idx].title = title;
+  if (date !== undefined) exams[idx].date = date;
+  if (pdf !== undefined) exams[idx].pdf = pdf;
+  if (subject !== undefined) exams[idx].subject = subject;
+  if (link !== undefined) exams[idx].link = link;
+
+  saveExams(exams);
+  res.json({ message: 'تم تعديل الامتحان بنجاح', exam: exams[idx] });
+});
+
 // 404 fallback
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: 'Not Found',
     message: `Endpoint ${req.method} ${req.path} does not exist`,
     availableEndpoints: {
@@ -613,7 +660,7 @@ app.use((req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal Server Error',
     message: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
   });
