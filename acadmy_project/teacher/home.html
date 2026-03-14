@@ -193,12 +193,35 @@
                       placeholder="اكتب وصفاً مختصراً لمحتوى الفيديو..."></textarea>
                   </div>
                   <div class="row flex-row-reverse mb-4 g-3">
-                    <div class="col-md-6">
-                      <label class="form-label fw-bold"><i class="bi bi-link-45deg me-1 text-primary"></i> رابط الفيديو
-                        (YouTube)</label>
-                      <input type="url" class="form-control form-control-lg bg-light border-0" id="videoUrl" required
+                    <div class="col-md-12 mb-3">
+                      <label class="form-label fw-bold"><i class="bi bi-play-circle me-1 text-primary"></i> نوع
+                        المصدر</label>
+                      <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="sourceType" id="sourceUrl" checked
+                          onclick="toggleVideoSource('url')">
+                        <label class="btn btn-outline-primary" for="sourceUrl">رابط (YouTube/Drive)</label>
+
+                        <input type="radio" class="btn-check" name="sourceType" id="sourceFile"
+                          onclick="toggleVideoSource('file')">
+                        <label class="btn btn-outline-primary" for="sourceFile">رفع ملف فيديو</label>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6" id="urlInputGroup">
+                      <label class="form-label fw-bold"><i class="bi bi-link-45deg me-1 text-primary"></i> رابط
+                        الفيديو</label>
+                      <input type="url" class="form-control form-control-lg bg-light border-0" id="videoUrl"
                         placeholder="https://youtube.com/...">
                     </div>
+
+                    <div class="col-md-6 d-none" id="fileInputGroup">
+                      <label class="form-label fw-bold"><i class="bi bi-file-earmark-play me-1 text-primary"></i> اختر
+                        ملف الفيديو</label>
+                      <input type="file" class="form-control form-control-lg bg-light border-0" id="videoFileInput"
+                        accept="video/*">
+                      <small class="text-muted">الحد الأقصى للملف: 500 ميجابايت</small>
+                    </div>
+
                     <div class="col-md-6">
                       <label class="form-label fw-bold"><i class="bi bi-tags me-1 text-primary"></i> التصنيف
                         (المادة)</label>
@@ -400,6 +423,20 @@
       loadGradesExams();
       setupEventListeners();
     });
+
+    function toggleVideoSource(type) {
+      if (type === 'url') {
+        document.getElementById('urlInputGroup').classList.remove('d-none');
+        document.getElementById('fileInputGroup').classList.add('d-none');
+        document.getElementById('videoUrl').required = true;
+        document.getElementById('videoFileInput').required = false;
+      } else {
+        document.getElementById('urlInputGroup').classList.add('d-none');
+        document.getElementById('fileInputGroup').classList.remove('d-none');
+        document.getElementById('videoUrl').required = false;
+        document.getElementById('videoFileInput').required = true;
+      }
+    }
 
     function setupEventListeners() {
       // التنقل بين الأقسام
@@ -942,33 +979,71 @@
     async function addVideo(e) {
       e.preventDefault();
 
-      const video = {
-        title: document.getElementById('videoTitle').value,
-        description: document.getElementById('videoDescription').value,
-        url: document.getElementById('videoUrl').value,
-        category: document.getElementById('videoCategory').value,
-        teacher: teacherEmail
-      };
+      const title = document.getElementById('videoTitle').value;
+      const description = document.getElementById('videoDescription').value;
+      const category = document.getElementById('videoCategory').value;
+      const isFile = document.getElementById('sourceFile').checked;
+
+      let finalUrl = '';
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const spinner = document.getElementById('uploadSpinner');
+      const icon = document.getElementById('uploadIcon');
+
+      // UI Feedback start
+      submitBtn.disabled = true;
+      spinner.classList.remove('d-none');
+      icon.classList.add('d-none');
 
       try {
+        if (isFile) {
+          const fileInput = document.getElementById('videoFileInput');
+          if (!fileInput.files[0]) throw new Error('يرجى اختيار ملف أولاً');
+
+          const formData = new FormData();
+          formData.append('videoFile', fileInput.files[0]);
+
+          const uploadRes = await fetch(`${API_URL}/videos/upload`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!uploadRes.ok) {
+            const err = await uploadRes.json();
+            throw new Error(err.message || 'فشل رفع الملف');
+          }
+
+          const data = await uploadRes.json();
+          finalUrl = API_URL + data.url; // Relative to full URL
+        } else {
+          finalUrl = document.getElementById('videoUrl').value;
+        }
+
         const res = await fetch(`${API_URL}/videos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(video)
+          body: JSON.stringify({
+            title, description, url: finalUrl, category, teacher: teacherEmail
+          })
         });
 
         if (res.ok) {
+          Swal.fire('تم بنجاح', 'تمت إضافة الفيديو إلى المكتبة', 'success');
           document.getElementById('addVideoForm').reset();
-          Swal.fire('تم!', 'تم إضافة الفيديو بنجاح', 'success');
-          loadTeacherStats();
+          toggleVideoSource('url'); // Reset UI
           loadTeacherVideos();
+          loadTeacherStats();
           switchTab('videos');
         } else {
-          const error = await res.json();
-          Swal.fire('خطأ', error.message, 'error');
+          const err = await res.json();
+          Swal.fire('خطأ', err.message, 'error');
         }
       } catch (err) {
-        Swal.fire('خطأ', 'خطأ في الاتصال بالخادم', 'error');
+        Swal.fire('خطأ', err.message || 'حدث خطأ غير متوقع', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        spinner.classList.add('d-none');
+        icon.classList.remove('d-none');
       }
     }
 

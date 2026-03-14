@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 const VIDEOS_FILE = path.join(__dirname, 'videos.json');
@@ -110,7 +111,10 @@ function initUsers() {
       { email: 'admin12345@gmail.com', password: bcrypt.hashSync('Admin@123', 10), role: 'admin' },
       { email: 'warda12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' },
       { email: 'ahlam12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' },
-      { email: 'nourhan12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' }
+      { email: 'nourhan12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' },
+      { email: 'sheren12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' },
+      { email: 'noura12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' },
+      { email: 'hager12345@gmail.com', password: bcrypt.hashSync('Teacher@123', 10), role: 'teacher' }
     ];
     saveUsers(users);
     console.log('Initial users created');
@@ -144,6 +148,47 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Request Logger Middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
+// Serve the frontend files statically
+const staticPath = path.join(__dirname, '../acadmy_project');
+console.log('Serving static files from:', staticPath);
+app.use('/acadmy_project', express.static(staticPath));
+
+// Serve uploaded videos statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Configure Multer for video uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, 'uploads/videos');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('video/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('يرجى رفع ملف فيديو فقط'));
+    }
+  }
+});
 
 // load or initialize
 let users = initUsers();
@@ -181,17 +226,18 @@ app.post('/register', (req, res) => {
     return res.status(400).json({ message: 'email and password are required' });
   }
 
-  const exists = users.find(u => u.email === email);
+  const currentUsers = loadUsers();
+  const exists = currentUsers.find(u => u.email === email);
   if (exists) {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  // anything that is not one of the preseeded teachers/admin is student
   const role = 'student';
   const hashed = bcrypt.hashSync(password, 10);
   const newUser = { email, password: hashed, role };
-  users.push(newUser);
-  saveUsers(users);
+  currentUsers.push(newUser);
+  saveUsers(currentUsers);
+  users = currentUsers; // sync global too
   res.json({ message: 'Registered successfully', role });
 });
 
@@ -201,7 +247,8 @@ app.post('/login', (req, res) => {
     return res.status(400).json({ message: 'email and password are required' });
   }
 
-  const user = users.find(u => u.email === email);
+  const currentUsers = loadUsers();
+  const user = currentUsers.find(u => u.email === email);
   if (!user) {
     return res.status(400).json({ message: 'Invalid email or password' });
   }
@@ -214,6 +261,15 @@ app.post('/login', (req, res) => {
 });
 
 // ============ VIDEOS API ============
+
+// POST upload a video file
+app.post('/videos/upload', upload.single('videoFile'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'لم يتم اختيار ملف' });
+  }
+  const videoUrl = `/uploads/videos/${req.file.filename}`;
+  res.json({ url: videoUrl });
+});
 
 // GET all videos (with optional category filter)
 app.get('/videos', (req, res) => {
@@ -360,7 +416,7 @@ app.get('/progress/:studentEmail', (req, res) => {
 
 // POST record video watch/completion
 app.post('/progress', (req, res) => {
-  const { student, videoId, status, progress: percent } = req.body;
+  const { student, videoId, status, progress: percent, currentTime } = req.body;
 
   if (!student || !videoId) {
     return res.status(400).json({ message: 'البريد الإلكتروني والفيديو مطلوبان' });
@@ -381,6 +437,7 @@ app.post('/progress', (req, res) => {
     videoId,
     status: status || 'watching', // watching, completed
     percent: percent || 0,
+    currentTime: currentTime || 0,
     lastUpdated: new Date().toISOString()
   };
 
@@ -649,7 +706,7 @@ app.use((req, res) => {
     message: `Endpoint ${req.method} ${req.path} does not exist`,
     availableEndpoints: {
       auth: ['POST /login', 'POST /register'],
-      videos: ['GET /videos', 'GET /videos/:id', 'POST /videos', 'DELETE /videos/:id'],
+      videos: ['GET /videos', 'GET /videos/:id', 'POST /videos', 'POST /videos/upload', 'DELETE /videos/:id'],
       progress: ['GET /progress/:studentEmail', 'POST /progress'],
       admin: ['GET /admin/users', 'GET /admin/stats'],
       health: ['GET /ping']

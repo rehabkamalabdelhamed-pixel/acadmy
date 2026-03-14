@@ -28,5 +28,20 @@
     "email": "rehab@gmail.com",
     "password": "$2b$10$cDZuKO5L0ZpAnuB3QLsnJu27xLxR2wbycMoPd9ZZaXH9tWBMLonPC",
     "role": "student"
+  },
+  {
+    "email": "sheren12345@gmail.com",
+    "password": "$2b$10$nj7EUtsiIJ8079mUw.XDGe49uF2hakE3nqWy56pDzO4NKUqOzH6s6",
+    "role": "teacher"
+  },
+  {
+    "email": "noura12345@gmail.com",
+    "password": "$2b$10$nj7EUtsiIJ8079mUw.XDGe49uF2hakE3nqWy56pDzO4NKUqOzH6s6",
+    "role": "teacher"
+  },
+  {
+    "email": "hager12345@gmail.com",
+    "password": "$2b$10$nj7EUtsiIJ8079mUw.XDGe49uF2hakE3nqWy56pDzO4NKUqOzH6s6",
+    "role": "teacher"
   }
 ]

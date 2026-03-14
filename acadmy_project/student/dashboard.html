@@ -57,6 +57,22 @@
 
     <!-- المحتوى الرئيسي -->
     <div class="col-lg-10 main-content">
+      <!-- تنبيه في حالة فتح الملف محلياً -->
+      <div id="originWarning" class="alert alert-danger d-none m-4 shadow-sm"
+        style="border-radius: 12px; border: none; background: linear-gradient(135deg, #ff4b2b, #ff416c); color: white;">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+          <div>
+            <h5 class="fw-bold mb-1">تنبيه هام: المتصفح يمنع تشغيل الفيديوهات!</h5>
+            <p class="mb-0 opacity-90">لقد قمت بفتح الملف مباشرة من جهازك. لكي تعمل الفيديوهات وتتبع الوقت بشكل صحيح،
+              يرجى فتح الموقع عبر هذا الرابط: <br>
+              <a href="http://localhost:3000/acadmy_project/student/dashboard.html"
+                class="text-white fw-bold">http://localhost:3000/acadmy_project/student/dashboard.html</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- لوحة التحكم -->
       <div id="dashboardTab" class="tab-content">
         <!-- Hero Section -->
@@ -320,6 +336,13 @@
     let allPdfs = [];
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Check for local file protocol (Origin null issue)
+      if (window.location.protocol === 'file:') {
+        const warning = document.getElementById('originWarning');
+        if (warning) warning.classList.remove('d-none');
+        console.error('CORS Error Avoidance: Please run via http://localhost:3000');
+      }
+
       document.getElementById('studentInfo').textContent = studentEmail;
       loadStudentProgress();
       loadAllVideos();
@@ -783,8 +806,28 @@
       return `<span class="badge-category bg-light text-muted">${cat}</span>`;
     }
 
+    function getGoogleDriveStreamUrl(url) {
+      if (!url || !url.includes('drive.google.com')) return null;
+      const regex = /\/file\/d\/([^\/]+)/;
+      const match = url.match(regex);
+      if (match && match[1]) {
+        // Use export=media for better streaming compatibility
+        return `https://docs.google.com/uc?export=media&id=${match[1]}`;
+      }
+      return null;
+    }
+
+    function getLocalVideoUrl(url) {
+      if (!url) return null;
+      // Check if it's a local upload path
+      if (url.includes('/uploads/videos/')) {
+        return url;
+      }
+      return null;
+    }
+
     function getYouTubeEmbedUrl(url) {
-      if (!url) return '';
+      if (!url || (!url.includes('youtube.com') && !url.includes('youtu.be'))) return null;
 
       // Extract video ID from various YouTube URL formats
       // try common patterns first
@@ -866,31 +909,45 @@
       const badge = document.getElementById('videoCategoryBadge');
       if (badge) badge.textContent = video.category || 'عام';
 
-      // Embed YouTube video
-      const embedUrl = getYouTubeEmbedUrl(video.url);
       const playerDiv = document.getElementById('videoPlayer');
-
-      // تنظيف الـ div أولاً
       playerDiv.innerHTML = '';
 
-      if (!embedUrl || embedUrl === video.url) {
-        // إذا لم نتمكن من استخراج معرف الفيديو
+      const progress = studentProgress[videoId] || { percent: 0, currentTime: 0 };
+
+      const driveUrl = getGoogleDriveStreamUrl(video.url);
+      const youTubeUrl = getYouTubeEmbedUrl(video.url);
+      const localUrl = getLocalVideoUrl(video.url);
+
+      if (localUrl || driveUrl) {
+        // Use HTML5 Video Player for Local Uploads and Google Drive
+        const videoSrc = localUrl || driveUrl;
         playerDiv.innerHTML = `
-          <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; color: #666;">
-            <i class="bi bi-exclamation-circle" style="font-size: 3rem; color: #dc3545; margin-bottom: 10px;"></i>
-            <p style="font-weight: 600; font-size: 1.1rem;">خطأ في تحميل الفيديو المحمل</p>
-            <small class="text-muted" style="word-break: break-all; padding: 0 20px; text-align: center;">الرابط: ${video.url}</small>
-            <a href="${video.url}" target="_blank" class="btn btn-primary mt-3" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
-              <i class="bi bi-youtube me-2"></i> شاهد على YouTube
-            </a>
-          </div>
+          <video id="mainVideoPlayer" controls width="100%" height="100%" crossorigin="anonymous" style="background: #000;"
+            onerror="${driveUrl ? `fallbackToDrivePreview('${video.url}')` : 'console.error(\'Local video error\')'}">
+            <source src="${videoSrc}" type="video/mp4">
+            متصفحك لا يدعم تشغيل الفيديو.
+          </video>
         `;
-      } else {
+        const videoElement = document.getElementById('mainVideoPlayer');
+
+        // Seek to saved time once metadata is loaded
+        videoElement.onloadedmetadata = () => {
+          if (progress.currentTime > 0) {
+            videoElement.currentTime = progress.currentTime;
+          }
+        };
+
+        // Auto-save progress every 10 seconds or when paused
+        videoElement.ontimeupdate = throttle(() => saveVideoProgress(videoElement), 10000);
+        videoElement.onpause = () => saveVideoProgress(videoElement);
+
+      } else if (youTubeUrl) {
+        // YouTube Embed
         playerDiv.innerHTML = `
           <iframe 
             width="100%" 
             height="100%" 
-            src="${embedUrl}" 
+            src="${youTubeUrl}" 
             title="${video.title}"
             frameborder="0" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -899,9 +956,16 @@
             style="border: none;">
           </iframe>
         `;
+      } else {
+        playerDiv.innerHTML = `
+          <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; color: #666;">
+            <i class="bi bi-exclamation-circle" style="font-size: 3rem; color: #dc3545; margin-bottom: 10px;"></i>
+            <p style="font-weight: 600; font-size: 1.1rem;">خطأ في تحميل الفيديو</p>
+            <a href="${video.url}" target="_blank" class="btn btn-primary mt-3">شاهد الرابط الخارجي</a>
+          </div>
+        `;
       }
 
-      const progress = studentProgress[videoId] || { percent: 0 };
       document.getElementById('progressSlider').value = progress.percent;
       document.getElementById('progressBar').style.width = progress.percent + '%';
       const pText = document.getElementById('progressTextValue');
@@ -910,8 +974,60 @@
       new bootstrap.Modal(document.getElementById('videoModal')).show();
     }
 
+    // Helper to stop excessive API calls
+    function throttle(func, limit) {
+      let inThrottle;
+      return function () {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+          func.apply(context, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      }
+    }
+
+    async function saveVideoProgress(videoElement) {
+      if (!currentVideoId || !videoElement) return;
+
+      const currentTime = videoElement.currentTime;
+      const duration = videoElement.duration;
+      const percent = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
+
+      // Update UI slider/bar immediately
+      document.getElementById('progressSlider').value = percent;
+      document.getElementById('progressBar').style.width = percent + '%';
+      const pText = document.getElementById('progressTextValue');
+      if (pText) pText.textContent = percent + '%';
+
+      try {
+        await fetch(`${API_URL}/progress`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student: studentEmail,
+            videoId: currentVideoId,
+            status: percent >= 95 ? 'completed' : 'watching',
+            progress: percent,
+            currentTime: currentTime
+          })
+        });
+        // Update local memory
+        if (!studentProgress[currentVideoId]) studentProgress[currentVideoId] = {};
+        studentProgress[currentVideoId].percent = percent;
+        studentProgress[currentVideoId].currentTime = currentTime;
+        studentProgress[currentVideoId].status = percent >= 95 ? 'completed' : 'watching';
+        updateStats();
+      } catch (err) {
+        console.error('Failed to auto-save progress:', err);
+      }
+    }
+
     async function markVideoComplete() {
       const progressPercent = document.getElementById('progressSlider').value;
+      const videoElement = document.getElementById('mainVideoPlayer');
+      const time = videoElement ? videoElement.currentTime : 0;
 
       try {
         const res = await fetch(`${API_URL}/progress`, {
@@ -921,7 +1037,8 @@
             student: studentEmail,
             videoId: currentVideoId,
             status: parseInt(progressPercent) >= 80 ? 'completed' : 'watching',
-            progress: parseInt(progressPercent)
+            progress: parseInt(progressPercent),
+            currentTime: time
           })
         });
 
@@ -976,6 +1093,26 @@
         document.getElementById('examsTaken').textContent = '0';
         document.getElementById('examsPassed').textContent = '0';
       }
+    }
+
+    function fallbackToDrivePreview(url) {
+      console.warn('HTML5 Video failed, falling back to Drive Preview:', url);
+      const playerDiv = document.getElementById('videoPlayer');
+      const previewUrl = url.replace('/view', '/preview');
+      playerDiv.innerHTML = `
+        <iframe 
+          width="100%" 
+          height="100%" 
+          src="${previewUrl}" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen="true"
+          style="border: none;">
+        </iframe>
+        <div class="alert alert-warning m-3" style="font-size: 0.85rem;">
+          <i class="bi bi-info-circle me-2"></i> تم استخدام وضع المعاينة لأن المتصفح أو جوجل منع التشغيل المباشر. (تتبع الوقت غير متاح في هذا الوضع).
+        </div>
+      `;
     }
 
     function logout() {
