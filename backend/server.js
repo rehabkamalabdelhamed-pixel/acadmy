@@ -363,7 +363,15 @@ app.delete('/videos/:id', (req, res) => {
   videos.splice(videoIndex, 1);
   saveVideos(videos);
 
-  res.json({ message: 'تم حذف الفيديو بنجاح' });
+  // Clean up progress entries for this video
+  let progressList = loadProgress();
+  const filteredProgress = progressList.filter(p => p.videoId !== req.params.id);
+  if (progressList.length !== filteredProgress.length) {
+    saveProgress(filteredProgress);
+    console.log(`Cleaned up ${progressList.length - filteredProgress.length} progress entries for video ${req.params.id}`);
+  }
+
+  res.json({ message: 'تم حذف الفيديو بنجاح مع مسح سجلات التقدم' });
 });
 
 // PUT update video (teacher can update own, admin can update any)
