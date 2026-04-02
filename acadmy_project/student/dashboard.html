@@ -44,6 +44,9 @@
           <a class="nav-link" href="#" data-tab="pdfs">
             <i class="bi bi-file-earmark-pdf-fill me-2 fs-5"></i> المذكرات (PDF)
           </a>
+          <a class="nav-link" href="https://meet.google.com/" target="_blank">
+            <i class="bi bi-camera-video-fill me-2 fs-5"></i> تواصل مع مدرسك (Google Meet)
+          </a>
         </nav>
       </div>
 
@@ -57,21 +60,7 @@
 
     <!-- المحتوى الرئيسي -->
     <div class="col-lg-10 main-content">
-      <!-- تنبيه في حالة فتح الملف محلياً -->
-      <div id="originWarning" class="alert alert-danger d-none m-4 shadow-sm"
-        style="border-radius: 12px; border: none; background: linear-gradient(135deg, #ff4b2b, #ff416c); color: white;">
-        <div class="d-flex align-items-center">
-          <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
-          <div>
-            <h5 class="fw-bold mb-1">تنبيه هام: المتصفح يمنع تشغيل الفيديوهات!</h5>
-            <p class="mb-0 opacity-90">لقد قمت بفتح الملف مباشرة من جهازك. لكي تعمل الفيديوهات وتتبع الوقت بشكل صحيح،
-              يرجى فتح الموقع عبر هذا الرابط: <br>
-              <a href="http://localhost:3000/acadmy_project/student/dashboard.html"
-                class="text-white fw-bold">http://localhost:3000/acadmy_project/student/dashboard.html</a>
-            </p>
-          </div>
-        </div>
-      </div>
+
 
       <!-- لوحة التحكم -->
       <div id="dashboardTab" class="tab-content">
@@ -336,12 +325,7 @@
     let allPdfs = [];
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Check for local file protocol (Origin null issue)
-      if (window.location.protocol === 'file:') {
-        const warning = document.getElementById('originWarning');
-        if (warning) warning.classList.remove('d-none');
-        console.error('CORS Error Avoidance: Please run via http://localhost:3000');
-      }
+
 
       document.getElementById('studentInfo').textContent = studentEmail;
       loadStudentProgress();
