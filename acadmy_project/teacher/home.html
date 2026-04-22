@@ -425,6 +425,7 @@
       loadExamsAdmin();
       loadGradesExams();
       setupEventListeners();
+      initializeTabFromUrl();
     });
 
     function toggleVideoSource(type) {
@@ -469,9 +470,23 @@
       if (addExamForm) addExamForm.addEventListener('submit', addExam);
     }
 
-    function switchTab(tab) {
+    function switchTab(tab, shouldUpdateUrl = true) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('d-none'));
       document.getElementById(tab + 'Tab').classList.remove('d-none');
+      document.querySelectorAll('.nav-link[data-tab]').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tab);
+      });
+      if (shouldUpdateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', tab);
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+
+    function initializeTabFromUrl() {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (!tab || !document.getElementById(tab + 'Tab')) return;
+      switchTab(tab, false);
     }
 
     function filterBySubject(subject) {
@@ -761,9 +776,17 @@
 
     async function loadTeacherStats() {
       try {
-        const res = await fetch(`${API_URL}/admin/stats?email=${teacherEmail}`);
-        const stats = await res.json();
+        const [statsRes, examsRes, pdfsRes] = await Promise.all([
+          fetch(`${API_URL}/admin/stats?email=${teacherEmail}`),
+          fetch(`${API_URL}/exams`),
+          fetch(`${API_URL}/pdfs`)
+        ]);
+        const stats = await statsRes.json();
+        const exams = examsRes.ok ? await examsRes.json() : [];
+        const pdfs = pdfsRes.ok ? await pdfsRes.json() : [];
         document.getElementById('videosCount').textContent = stats.myVideos || 0;
+        document.getElementById('examsCountDash').textContent = exams.length;
+        document.getElementById('pdfsCountDash').textContent = pdfs.length;
       } catch (err) {
         console.error('خطأ في تحميل الإحصائيات:', err);
       }

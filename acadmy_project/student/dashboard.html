@@ -29,19 +29,19 @@
 
       <div class="mt-4 flex-grow-1">
         <nav class="nav flex-column gap-1">
-          <a class="nav-link active" href="#" data-tab="dashboard">
+          <a class="nav-link active" href="javascript:void(0)" data-tab="dashboard">
             <i class="bi bi-house-door-fill me-2 fs-5"></i> لوحة التحكم
           </a>
-          <a class="nav-link" href="#" data-tab="videos">
+          <a class="nav-link" href="javascript:void(0)" data-tab="videos">
             <i class="bi bi-play-circle-fill me-2 fs-5"></i> كورسات ومحاضرات
           </a>
-          <a class="nav-link" href="#" data-tab="teachers">
+          <a class="nav-link" href="javascript:void(0)" data-tab="teachers">
             <i class="bi bi-people-fill me-2 fs-5"></i> المعلمون المتاحون
           </a>
-          <a class="nav-link" href="#" data-tab="exams">
+          <a class="nav-link" href="javascript:void(0)" data-tab="exams">
             <i class="bi bi-file-earmark-check-fill me-2 fs-5"></i> الامتحانات المتاحة
           </a>
-          <a class="nav-link" href="#" data-tab="pdfs">
+          <a class="nav-link" href="javascript:void(0)" data-tab="pdfs">
             <i class="bi bi-file-earmark-pdf-fill me-2 fs-5"></i> المذكرات (PDF)
           </a>
           <a class="nav-link" href="https://meet.google.com/" target="_blank">
@@ -52,7 +52,7 @@
 
       <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
         <a class="nav-link bg-danger text-white fw-bold rounded-pill px-4 py-2 d-flex align-items-center justify-content-center shadow-sm"
-          href="#" onclick="logout()" style="transition: all 0.3s; margin-bottom: 10px;">
+          href="javascript:void(0)" onclick="logout()" style="transition: all 0.3s; margin-bottom: 10px;">
           <i class="bi bi-box-arrow-left me-2 fs-5"></i> تسجيل الخروج
         </a>
       </div>
@@ -336,6 +336,7 @@
       if (typeof loadStudentGrades === 'function') loadStudentGrades();
       if (typeof loadPdfs === 'function') loadPdfs();
       setupEventListeners();
+      initializeTabFromUrl();
     });
 
     function setupEventListeners() {
@@ -368,9 +369,23 @@
       document.getElementById('markCompleteBtn').addEventListener('click', markVideoComplete);
     }
 
-    function switchTab(tab) {
+    function switchTab(tab, shouldUpdateUrl = true) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('d-none'));
       document.getElementById(tab + 'Tab').classList.remove('d-none');
+      document.querySelectorAll('.nav-link[data-tab]').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tab);
+      });
+      if (shouldUpdateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', tab);
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+
+    function initializeTabFromUrl() {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (!tab || !document.getElementById(tab + 'Tab')) return;
+      switchTab(tab, false);
     }
 
     async function loadStudentProgress() {
@@ -560,11 +575,16 @@
         `;
         el.querySelector('.pdf-link').addEventListener('click', (e) => {
           e.preventDefault();
-          const url = e.currentTarget.dataset.url;
+          let url = e.currentTarget.dataset.url;
+          if (url.includes('drive.google.com') && url.includes('/view')) {
+            url = url.replace('/view', '/preview');
+          }
           document.getElementById('pdfViewerFrame').src = url;
           // Use bootstrap modal if available, or just window.open
           if (document.getElementById('pdfViewerModal')) {
-            new bootstrap.Modal(document.getElementById('pdfViewerModal')).show();
+            const pdfModalEl = document.getElementById('pdfViewerModal');
+            const pdfModal = bootstrap.Modal.getInstance(pdfModalEl) || new bootstrap.Modal(pdfModalEl);
+            pdfModal.show();
           } else {
             window.open(url, '_blank');
           }
@@ -695,7 +715,7 @@
         let progressColor = progress.percent === 100 ? 'bg-success' : 'bg-primary';
 
         card.innerHTML = `
-          <div class="card h-100 border-0 shadow-sm video-card" data-video-id="${video.id}" onclick="openVideoModal('${video.id}')" style="border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <div class="card h-100 border-0 shadow-sm video-card" data-video-id="${video.id}" onclick="openVideoModal('${video.id}'); event.preventDefault();" style="border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;">
             <div class="card-img-top bg-dark text-center position-relative d-flex align-items-center justify-content-center" style="height: 180px;">
               <i class="bi bi-play-circle-fill text-white opacity-75" style="font-size: 4rem; transition: transform 0.3s ease; text-shadow: 0 4px 8px rgba(0,0,0,0.3);"></i>
               <div class="input-progress position-absolute bottom-0 start-0 w-100" style="height: 6px; background: rgba(255,255,255,0.2);">
@@ -805,7 +825,7 @@
       if (!url) return null;
       // Check if it's a local upload path
       if (url.includes('/uploads/videos/')) {
-        return url;
+        return url.startsWith('http') ? url : API_URL + url;
       }
       return null;
     }
@@ -906,7 +926,7 @@
         // Use HTML5 Video Player for Local Uploads and Google Drive
         const videoSrc = localUrl || driveUrl;
         playerDiv.innerHTML = `
-          <video id="mainVideoPlayer" controls width="100%" height="100%" crossorigin="anonymous" style="background: #000;"
+          <video id="mainVideoPlayer" controls width="100%" height="100%" style="background: #000;"
             onerror="${driveUrl ? `fallbackToDrivePreview('${video.url}')` : 'console.error(\'Local video error\')'}">
             <source src="${videoSrc}" type="video/mp4">
             متصفحك لا يدعم تشغيل الفيديو.
@@ -937,6 +957,7 @@
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen="true"
             loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
             style="border: none;">
           </iframe>
         `;
@@ -955,7 +976,9 @@
       const pText = document.getElementById('progressTextValue');
       if (pText) pText.textContent = progress.percent + '%';
 
-      new bootstrap.Modal(document.getElementById('videoModal')).show();
+      const modalEl = document.getElementById('videoModal');
+      const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+      modal.show();
     }
 
     // Helper to stop excessive API calls

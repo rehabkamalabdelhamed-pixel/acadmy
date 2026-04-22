@@ -43,5 +43,10 @@
     "email": "hager12345@gmail.com",
     "password": "$2b$10$nj7EUtsiIJ8079mUw.XDGe49uF2hakE3nqWy56pDzO4NKUqOzH6s6",
     "role": "teacher"
+  },
+  {
+    "email": "AHMED@gmail.com",   
+    "password": "$2b$10$EV.Md3XNnejQC0ysu2IpbO19Wc1TkSuQNWe/TqVpPLlBWIPuyTV5a",
+    "role": "student"
   }
 ]

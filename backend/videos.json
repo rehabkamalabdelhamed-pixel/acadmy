@@ -8,5 +8,25 @@
     "teacher": "ahlam12345@gmail.com",
     "createdAt": "2026-03-14T14:06:58.904Z",
     "duration": 0
+  },
+  {
+    "id": "1776868187075",
+    "title": "programming",
+    "description": "سضش",
+    "url": "http://localhost:3000/uploads/videos/1776868186409-288787330.mp4",
+    "category": "برمجة وذكاء اصطناعي",
+    "teacher": "warda12345@gmail.com",
+    "createdAt": "2026-04-22T14:29:47.075Z",
+    "duration": 0
+  },
+  {
+    "id": "1776868442715",
+    "title": "ثصض",
+    "description": "4321",
+    "url": "https://youtu.be/kjZEzwKjXxE?si=pEiSMgsFOkfNRxPH",
+    "category": "جافا اسكربت",
+    "teacher": "warda12345@gmail.com",
+    "createdAt": "2026-04-22T14:34:02.715Z",
+    "duration": 0
   }
 ]
